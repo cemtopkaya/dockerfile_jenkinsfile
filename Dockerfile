@@ -67,7 +67,8 @@ FROM withdevelopmentlibs as withcinartoolsandlibs
 
 RUN apt-get install -y  cinarcodegenerator \
                         cinarloggersink \
-                        cinarcryptolib
+                        cinarcryptolib \
+                        cinarframework
 
 
 FROM withcinartoolsandlibs
