@@ -14,7 +14,7 @@ pipeline {
     
 
     agent {
-        docker { image 'jenkins-lts-jdk11:bash' }
+        docker { image 'jenkins-lts-jdk11' }
     }
     parameters { 
         string(name: 'YAML_BRANCH_NAME', defaultValue: 'master', description: 'YAML Branş adı')
