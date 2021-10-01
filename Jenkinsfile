@@ -4,14 +4,19 @@ def packageName = "cnrnrf.deb"
 pipeline {
     //agent any
     
-    agent {
-        dockerfile {
-            filename 'Dockerfile'
-            dir '.'
-            label 'docker-cinardev'
-        }
-    }
+    // agent {
+    //     dockerfile {
+    //         filename 'Dockerfile'
+    //         dir '.'
+    //         label 'docker-cinardev'
+    //     }
+    // }
     
+
+    agent {
+        docker { image 'cinar/cndev' }
+    }
+
     parameters { 
         string(name: 'YAML_BRANCH_NAME', defaultValue: 'master', description: 'YAML Branş adı')
         string(name: 'NRF_BRANCH_NAME', defaultValue: 'NRF_CNF', description: 'NRF Branş adı') 
