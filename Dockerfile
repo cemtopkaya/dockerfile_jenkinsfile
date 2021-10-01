@@ -13,61 +13,66 @@ RUN echo "deb [trusted=yes] http://192.168.13.173:8080/repos/MC/ amd64/"  >> /et
 RUN echo "deb [trusted=yes] http://192.168.13.173:8080/repos/thirdparty/ amd64/"  >> /etc/apt/sources.list.d/cinar.list
 RUN apt-get update
 
-RUN apt-get install -y socat \
-                        tmux \
-                        curl \
-                        wget \
-                        net-tools \
-                        netcat \
-                        iputils-ping \
-                        sudo
+RUN apt-get install -y curl \
+                       iputils-ping \
+                       net-tools \
+                       netcat \
+                       socat \
+                       tmux \
+                       wget
 
 
 FROM withlinuxtools as withdevelopmenttools
-RUN apt-get install -y g++ \
-                        gdb \
-                        git \
-                        cpp-jwt \
-                        dkms \
-                        python \
-                        nano \
-                        g3log \
-                        default-jre\
-                        cppcheck 
-#                       rabbitmq-server \
-#                       dpdk \
-#                       redis-server \
-#                       redis-tools \
-
+RUN apt-get install -y cpp-jwt \
+                       cppcheck \
+                       g++ \
+                       g3log \
+                       gdb \
+                       git \
+                       googletest \
+                       default-jre \
+                       dkms \
+                       dpdk \
+                       make \
+                       nano \
+                       python \
+                       rabbitmq-server
+#                      redis-server \
+#                      redis-tools \
 
 
 FROM withdevelopmenttools as withdevelopmentlibs
-RUN apt-get install -y  boost-all-dev  \
-                        libncurses5-dev  \
-                        libreadline-dev  \
-                        libsasl2-dev  \
-                        libssl-dev  \
-                        libxml2  \
-                        nettle-dev  \
-                        uuid-dev  \
-                        libxerces-c-dev  \
-                        libevent  \
-                        libicu55  \
-                        libnghttp2-asio  \
-                        libprometheuscpp  \
-                        nlohmann-json  \
+RUN apt-get install -y  boost-all-dev \
                         certificate \
-                        mongo-c-driver  \
-                        mongo-cxx-driver  \
-                        librabbitmq4  \
-                        libpq5
-# cinarcodegenerator \
-# cinarloggersink  \
+                        libncurses5-dev \
+                        libreadline-dev \
+                        libsasl2-dev \
+                        libssl-dev \
+                        libxml2 \
+                        libxerces-c-dev \
+                        libevent \
+                        libicu55 \
+                        libnghttp2-asio \
+                        libprometheuscpp \
+                        librabbitmq4 \
+                        libpq5 \
+                        mongo-c-driver \
+                        mongo-cxx-driver \
+                        nettle-dev \
+                        nlohmann-json \
+                        uuid-dev
 
-FROM withdevelopmentlibs
 
-USER root
-WORKDIR /root
-RUN mkdir -p /Source
+FROM withdevelopmentlibs as withCinarToolsAndLibs
 
-ENTRYPOINT ["/sbin/init"]
+RUN apt-get install -y  cinarcodegenerator \
+                        cinarloggersink \
+                        cinarcryptolib
+
+
+FROM withCinarToolsAndLibs
+# USER root
+# WORKDIR /root
+# RUN mkdir -p /Source
+
+# ENTRYPOINT ["/sbin/init"]
