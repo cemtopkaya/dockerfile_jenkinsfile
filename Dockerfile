@@ -63,14 +63,14 @@ RUN apt-get install -y  boost-all-dev \
                         uuid-dev
 
 
-FROM withdevelopmentlibs as withCinarToolsAndLibs
+FROM withdevelopmentlibs as withcinartoolsandlibs
 
 RUN apt-get install -y  cinarcodegenerator \
                         cinarloggersink \
                         cinarcryptolib
 
 
-FROM withCinarToolsAndLibs
+FROM withcinartoolsandlibs
 # USER root
 # WORKDIR /root
 # RUN mkdir -p /Source
