@@ -14,8 +14,10 @@ pipeline {
     
 
     agent {
-        docker { image 'jenkins-lts-jdk11' }
+        docker { image 'cinar/cndev:bash' }
+        // docker { image 'jenkins-lts-jdk11' }
     }
+    
     parameters { 
         string(name: 'YAML_BRANCH_NAME', defaultValue: 'master', description: 'YAML Branş adı')
         string(name: 'NRF_BRANCH_NAME', defaultValue: 'NRF_CNF', description: 'NRF Branş adı') 
