@@ -68,10 +68,15 @@ FROM withdevelopmentlibs as withcinartoolsandlibs
 RUN apt-get install -y  cinarcodegenerator \
                         cinarloggersink \
                         cinarcryptolib \
-                        cinarframework
+                        cinarframework-dbg
 
 
 FROM withcinartoolsandlibs
+
+RUN apt-get install -y cinarnnrfnfmanagement.15.201906-interworking.dbg \
+                       cinarnnrfnfdiscovery.15.201906-interworking.dbg \
+                       cinarnnrfaccesstoken.15.201906-interworking.dbg
+
 # USER root
 # WORKDIR /root
 # RUN mkdir -p /Source
