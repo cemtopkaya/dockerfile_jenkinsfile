@@ -28,7 +28,7 @@ pipeline {
         
         stage('Install required packages') {
             steps {
-                //cleanWs()
+                cleanWs()
                 // export CINAR_YAML_DIR=/home/jenkins/workspace/${JOB_NAME}/yaml
                 sh 'echo "<<<< paket kurulumu >>>>>"'
                 //sh 'apt-get install -y cnrnrf=1.0.0.687.debug'
