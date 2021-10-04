@@ -27,13 +27,13 @@ pipeline {
     
     stages {
         
-        stage('Clean Workspace') {
-            steps {
-                if(params.CLEAN_WORKSPACE.toBoolean()){
-                    cleanWs()
-                }
-            }
-        }
+        // stage('Clean Workspace') {
+        //     steps {
+        //         if(params.CLEAN_WORKSPACE.toBoolean()){
+        //             cleanWs()
+        //         }
+        //     }
+        // }
 
         stage('Install required packages') {
             steps {
