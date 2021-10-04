@@ -41,44 +41,47 @@ RUN apt-get install -y cpp-jwt \
 #                      redis-tools \
 
 
-FROM withdevelopmenttools as withdevelopmentlibs
-RUN apt-get install -y  boost-all-dev \
-                        certificate \
-                        libncurses5-dev \
-                        libreadline-dev \
-                        libsasl2-dev \
-                        libssl-dev \
-                        libxml2 \
-                        libxerces-c-dev \
-                        libevent \
-                        libicu55 \
-                        libnghttp2-asio \
-                        libprometheuscpp \
-                        librabbitmq4 \
-                        libpq5 \
-                        mongo-c-driver \
-                        mongo-cxx-driver \
-                        nettle-dev \
-                        nlohmann-json \
-                        uuid-dev
+# FROM withdevelopmenttools as withdevelopmentlibs
+# RUN apt-get install -y  boost-all-dev \
+#                         certificate \
+#                         libncurses5-dev \
+#                         libreadline-dev \
+#                         libsasl2-dev \
+#                         libssl-dev \
+#                         libxml2 \
+#                         libxerces-c-dev \
+#                         libevent \
+#                         libicu55 \
+#                         libnghttp2-asio \
+#                         libprometheuscpp \
+#                         librabbitmq4 \
+#                         libpq5 \
+#                         mongo-c-driver \
+#                         mongo-cxx-driver \
+#                         nettle-dev \
+#                         nlohmann-json \
+#                         uuid-dev
 
 
-FROM withdevelopmentlibs as withcinartoolsandlibs
+# FROM withdevelopmentlibs as withcinartoolsandlibs
 
-RUN apt-get install -y  cinarcodegenerator \
-                        cinarloggersink \
-                        cinarcryptolib \
-                        cinarframework-dbg
+# RUN apt-get install -y  cinarcodegenerator \
+#                         cinarloggersink \
+#                         cinarcryptolib \
+#                         cinarframework-dbg
 
 
-FROM withcinartoolsandlibs
+# FROM withcinartoolsandlibs
 
-RUN apt-get install -y cinarnnrfnfmanagement.15.201906-interworking.dbg \
-                       cinarnnrfnfdiscovery.15.201906-interworking.dbg \
-                       cinarnnrfaccesstoken.15.201906-interworking.dbg
+# RUN apt-get install -y cinarnnrfnfmanagement.15.201906-interworking.dbg \
+#                        cinarnnrfnfdiscovery.15.201906-interworking.dbg \
+#                        cinarnnrfaccesstoken.15.201906-interworking.dbg
 
+
+FROM withdevelopmenttools
+# RUN echo  "/opt/cinar/lib" > /etc/ld.so.conf.d/cinar.conf; ldconfig;
 # USER root
-# WORKDIR /root
-# RUN mkdir -p /Source
+RUN mkdir -p /Source
+WORKDIR /root
 
 # ENTRYPOINT ["/sbin/init"]

@@ -21,14 +21,20 @@ pipeline {
     parameters { 
         string(name: 'YAML_BRANCH_NAME', defaultValue: 'master', description: 'YAML Brans adi')
         string(name: 'NRF_BRANCH_NAME', defaultValue: 'NRF_CNF', description: 'NRF Brans adi') 
+        booleanParam(name: 'CLEAN_WORKSPACE', defaultValue: false, description: 'Clear Workspace') 
     }
     
     
     stages {
         
+        stage('Clean Workspace') {
+            if(params.CLEAN_WORKSPACE.toBoolean()){
+                cleanWs()
+            }
+        }
+
         stage('Install required packages') {
             steps {
-                cleanWs()
                 // export CINAR_YAML_DIR=/home/jenkins/workspace/${JOB_NAME}/yaml
                 sh 'echo "<<<< paket kurulumu >>>>>"'
                 //sh 'apt-get install -y cnrnrf=1.0.0.687.debug'
@@ -42,7 +48,8 @@ pipeline {
                 }
                 
                 dir('nrf') {
-                    git branch: "${NRF_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/cin/cinar_nrf.git'
+                    // git branch: "${NRF_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/cin/cinar_nrf.git'
+                    git branch: "${NRF_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/~cem.topkaya/cinar_nrf.git'
                 }
             }
         }
