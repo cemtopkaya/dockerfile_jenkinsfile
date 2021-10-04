@@ -46,6 +46,7 @@ pipeline {
         stage('Build') {
             steps {
                 dir('yaml') {
+                    print "params.YAML_BRANCH_NAME: ${params.YAML_BRANCH_NAME}"
                     print "YAML_BRANCH_NAME: ${YAML_BRANCH_NAME}"
                     git branch: "${YAML_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/cin/yaml.git'
                 }
