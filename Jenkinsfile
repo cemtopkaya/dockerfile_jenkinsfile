@@ -28,8 +28,10 @@ pipeline {
     stages {
         
         stage('Clean Workspace') {
-            if(params.CLEAN_WORKSPACE.toBoolean()){
-                cleanWs()
+            steps {
+                if(params.CLEAN_WORKSPACE.toBoolean()){
+                    cleanWs()
+                }
             }
         }
 
