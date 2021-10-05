@@ -52,6 +52,8 @@ pipeline {
                 dir('nrf') {
                     // git branch: "${NRF_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/cin/cinar_nrf.git'
                     git branch: "${NRF_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/~cem.topkaya/cinar_nrf.git'
+                    sh 'git remote -v'
+                    sh 'cat Makefile'
                 }
             }
         }
