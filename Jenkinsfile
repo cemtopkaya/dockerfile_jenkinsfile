@@ -27,23 +27,21 @@ pipeline {
     
     stages {
         
-        // stage('Clean Workspace') {
-        //     steps {
-        //         if(params.CLEAN_WORKSPACE.toBoolean()){
-        //             cleanWs()
-        //         }
-        //     }
-        // }
-
-        stage('Install required packages') {
+        stage('Clean Workspace') {
             steps {
-                // export CINAR_YAML_DIR=/home/jenkins/workspace/${JOB_NAME}/yaml
-                sh 'echo "<<<< paket kurulumu >>>>>"'
-                //sh 'apt-get install -y cnrnrf=1.0.0.687.debug'
+                script {
+                    if(params.CLEAN_WORKSPACE){
+                        print "--->>>Workspace will be cleaned"
+                        cleanWs()
+                        sh 'pwd'
+                        sh 'ls -al'
+                    }
+                }
             }
         }
 
-        stage('Build') {
+
+        stage('Clone Repos') {
             steps {
                 dir('yaml') {
                     print "params.YAML_BRANCH_NAME: ${params.YAML_BRANCH_NAME}"
@@ -55,6 +53,16 @@ pipeline {
                     // git branch: "${NRF_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/cin/cinar_nrf.git'
                     git branch: "${NRF_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/~cem.topkaya/cinar_nrf.git'
                 }
+            }
+        }
+        
+        stage('Install required packages') {
+            steps {
+                // export CINAR_YAML_DIR=/home/jenkins/workspace/${JOB_NAME}/yaml
+                dir('nrf') {
+                    sh 'make prereqs'
+                }
+                //sh 'apt-get install -y cnrnrf=1.0.0.687.debug'
             }
         }
         
