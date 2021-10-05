@@ -33,8 +33,6 @@ pipeline {
                     if(params.CLEAN_WORKSPACE){
                         print "--->>>Workspace will be cleaned"
                         cleanWs()
-                        sh 'pwd'
-                        sh 'ls -al'
                     }
                 }
             }
@@ -44,27 +42,12 @@ pipeline {
         stage('Clone Repos') {
             steps {
                 dir('yaml') {
-                    print "params.YAML_BRANCH_NAME: ${params.YAML_BRANCH_NAME}"
-                    print "YAML_BRANCH_NAME: ${YAML_BRANCH_NAME}"
                     git branch: "${YAML_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/cin/yaml.git'
                 }
                 
                 dir('nrf') {
-                    // git branch: "${NRF_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/cin/cinar_nrf.git'
                     git branch: "${NRF_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/~cem.topkaya/cinar_nrf.git'
-                    sh 'git remote -v'
-                    sh 'cat Makefile'
                 }
-            }
-        }
-        
-        stage('Install required packages') {
-            steps {
-                // export CINAR_YAML_DIR=/home/jenkins/workspace/${JOB_NAME}/yaml
-                dir('nrf') {
-                    sh 'make prereqs'
-                }
-                //sh 'apt-get install -y cnrnrf=1.0.0.687.debug'
             }
         }
         
