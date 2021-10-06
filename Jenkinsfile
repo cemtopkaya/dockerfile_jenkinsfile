@@ -50,13 +50,13 @@ pipeline {
 
         stage('Clone Repos') {
             steps {
-                if($YAML_BRANCH_NAME!=""){
+                if(params.YAML_BRANCH_NAME.toBoolean()){
                     dir('yaml') {
                         git branch: "${YAML_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: '${YAML_REPO_URL}'
                     }
                 }
                 
-                if($NRF_BRANCH_NAME!=""){
+                if(params.NRF_BRANCH_NAME.toBoolean()){
                     dir('nf') {
                         git branch: "${NRF_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: '${NF_REPO_URL}'
                     }
