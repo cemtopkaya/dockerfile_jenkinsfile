@@ -74,7 +74,7 @@ pipeline {
                     export CINAR_CODE_GENERATOR_DIR=$CINAR_BASE/bin/ccg
                     export CINAR_YAML_DIR=`pwd`/yaml
                     echo "CINAR_YAML_DIR: $CINAR_YAML_DIR"
-                    cd nrf
+                    cd nf
                     make dist release=on
                 '''
             }
