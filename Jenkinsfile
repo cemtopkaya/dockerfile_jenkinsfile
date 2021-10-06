@@ -1,15 +1,16 @@
 def packageName = "cnrnrf.deb"
-
+def NF_CLONE_DIRECTORY="nf"
+def YAML_CLONE_DIRECTORY="yaml"
 
 pipeline {
     //agent any
     
     agent {
-        dockerfile {
-            filename 'Dockerfile'
-            dir '.'
-            // label 'docker-cinardev'
-        }
+       dockerfile {
+           filename 'Dockerfile'
+           dir '.'
+           // label 'docker-cinardev'
+       }
     }
     
 
@@ -24,9 +25,10 @@ pipeline {
     parameters { 
         booleanParam(name: 'CLEAN_WORKSPACE', defaultValue: false, description: 'Clear Workspace') 
         string(name: 'NF_REPO_URL', defaultValue: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/~cem.topkaya/cinar_amf.git', description: 'NF Repo adresi') 
-        string(name: 'NRF_BRANCH_NAME', defaultValue: 'NRF_CNF', description: 'NRF Brans adi') 
+        string(name: 'NF_BRANCH_NAME', defaultValue: 'nokia', description: 'NF Brans adi') 
         string(name: 'YAML_REPO_URL', defaultValue: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/cin/yaml.git', description: 'YAML Repo adresi') 
         string(name: 'YAML_BRANCH_NAME', defaultValue: 'master', description: 'YAML Brans adi')
+        booleanParam(name: 'BUILD_NF', defaultValue: true, description: 'Starts to build')
         booleanParam(name: 'UPLOAD_DEBIAN_PACKAGE_TO_REPOSITORY', defaultValue: false, description: 'Upload debain package to repository') 
         string(name: 'DEBIAN_REPOSITORY_URL', defaultValue: 'http://192.168.13.173:8080/repos/latest', description: 'Repository address')
         booleanParam(name: 'CREATE_DOCKER_IMAGE', defaultValue: false, description: 'Create docker image from debian package')
@@ -52,15 +54,18 @@ pipeline {
         stage('Clone Repos') {
             steps{
                 script {
-                    if(params.YAML_BRANCH_NAME.toBoolean()){
-                        dir('yaml') {
-                            git branch: "${YAML_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: '${YAML_REPO_URL}'
+                    echo "params.YAML_BRANCH_NAME: ${params.YAML_BRANCH_NAME}"
+                    echo "params.NF_BRANCH_NAME.isEmpty(): ${params.NF_BRANCH_NAME.isEmpty()}"
+                    
+                    if(params.YAML_BRANCH_NAME != null && !params.YAML_BRANCH_NAME.isEmpty()){
+                        dir("${YAML_CLONE_DIRECTORY}") {
+                            git branch: "${params.YAML_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: "${params.YAML_REPO_URL}"
                         }
                     }
-            
-                    if(params.NRF_BRANCH_NAME.toBoolean()){
-                        dir('nf') {
-                            git branch: "${NRF_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: '${NF_REPO_URL}'
+                    
+                    if(params.NF_BRANCH_NAME != null && !params.NF_BRANCH_NAME.isEmpty()){
+                        dir("${NF_CLONE_DIRECTORY}") {
+                            git branch: "${params.NF_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: "${params.NF_REPO_URL}"
                         }
                     }
                 }
@@ -68,28 +73,38 @@ pipeline {
         }
         
         stage('Building project'){
+            when {
+                expression { params.BUILD_NF }
+            }
             steps{
                 sh '''
                     export CINAR_BASE=/opt/cinar
                     export CINAR_CODE_GENERATOR_DIR=$CINAR_BASE/bin/ccg
-                    export CINAR_YAML_DIR=`pwd`/yaml
+                    echo "YAML_CLONE_DIRECTORY: ''' + YAML_CLONE_DIRECTORY + '''"
+                    export CINAR_YAML_DIR=${WORKSPACE}/''' + YAML_CLONE_DIRECTORY + '''
                     echo "CINAR_YAML_DIR: $CINAR_YAML_DIR"
-                    cd nf
+                    cd ${WORKSPACE}/''' + NF_CLONE_DIRECTORY + '''
                     make dist release=on
                 '''
             }
         }
         
         stage('Building debian package'){
+            when {
+                expression { params.UPLOAD_DEBIAN_PACKAGE_TO_REPOSITORY }
+            }
             steps{
-                dir('nrf') {
+                dir("${NF_CLONE_DIRECTORY}") {
                     sh 'echo "<<<< Building debian package named with ${packageName} >>>>>"'
-                    sh 'dpkg-deb --build ./dist ${packageName}'
+                    //sh 'dpkg-deb --build ./dist ${packageName}'
                 }
             }
         }
         
         stage('Dockerization'){
+            when {
+                expression { params.CREATE_DOCKER_IMAGE }
+            }
             steps{
                 sh 'echo "<<<< Building docker image >>>>>"'
                 sh 'docker build -t 192.68.13.33:5000/cnrf:latest -f Dcokerfile .'
