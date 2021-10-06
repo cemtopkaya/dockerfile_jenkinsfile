@@ -37,28 +37,31 @@ pipeline {
     stages {
         
         stage('Clean Workspace') {
+            when{ 
+                expression {params.CLEAN_WORKSPACE}
+            }
             steps {
                 script {
-                    if(params.CLEAN_WORKSPACE){
-                        print "--->>>Workspace will be cleaned"
-                        cleanWs()
-                    }
+                    print "--->>>Workspace will be cleaned"
+                    cleanWs()
                 }
             }
         }
 
 
         stage('Clone Repos') {
-            steps {
-                if(params.YAML_BRANCH_NAME.toBoolean()){
-                    dir('yaml') {
-                        git branch: "${YAML_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: '${YAML_REPO_URL}'
+            steps{
+                script {
+                    if(params.YAML_BRANCH_NAME.toBoolean()){
+                        dir('yaml') {
+                            git branch: "${YAML_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: '${YAML_REPO_URL}'
+                        }
                     }
-                }
-                
-                if(params.NRF_BRANCH_NAME.toBoolean()){
-                    dir('nf') {
-                        git branch: "${NRF_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: '${NF_REPO_URL}'
+            
+                    if(params.NRF_BRANCH_NAME.toBoolean()){
+                        dir('nf') {
+                            git branch: "${NRF_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: '${NF_REPO_URL}'
+                        }
                     }
                 }
             }
