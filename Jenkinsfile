@@ -19,9 +19,15 @@ pipeline {
     // }
     
     parameters { 
-        string(name: 'YAML_BRANCH_NAME', defaultValue: 'master', description: 'YAML Brans adi')
-        string(name: 'NRF_BRANCH_NAME', defaultValue: 'NRF_CNF', description: 'NRF Brans adi') 
         booleanParam(name: 'CLEAN_WORKSPACE', defaultValue: false, description: 'Clear Workspace') 
+        string(name: 'NF_REPO_URL', defaultValue: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/~cem.topkaya/cinar_nrf.git', description: 'NF Repo adresi') 
+        string(name: 'NRF_BRANCH_NAME', defaultValue: 'NRF_CNF', description: 'NRF Brans adi') 
+        string(name: 'YAML_REPO_URL', defaultValue: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/cin/yaml.git', description: 'YAML Repo adresi') 
+        string(name: 'YAML_BRANCH_NAME', defaultValue: 'master', description: 'YAML Brans adi')
+        booleanParam(name: 'UPLOAD_DEBIAN_PACKAGE_TO_REPOSITORY', defaultValue: false, description: 'Upload debain package to repository') 
+        string(name: 'DEBIAN_REPOSITORY_URL', defaultValue: 'http://192.168.13.173:8080/repos/latest', description: 'Repository address')
+        booleanParam(name: 'CREATE_DOCKER_IMAGE', defaultValue: false, description: 'Create docker image from debian package')
+        string(name: 'DOCKER_IMAGE_TAG', defaultValue: "amf:1", description: 'Docker image tag name')
     }
     
     
@@ -41,12 +47,16 @@ pipeline {
 
         stage('Clone Repos') {
             steps {
-                dir('yaml') {
-                    git branch: "${YAML_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/cin/yaml.git'
+                if($YAML_BRANCH_NAME!=""){
+                    dir('yaml') {
+                        git branch: "${YAML_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: '${YAML_REPO_URL}'
+                    }
                 }
                 
-                dir('nrf') {
-                    git branch: "${NRF_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/~cem.topkaya/cinar_nrf.git'
+                if($NRF_BRANCH_NAME!=""){
+                    dir('nf') {
+                        git branch: "${NRF_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: '${NF_REPO_URL}'
+                    }
                 }
             }
         }
