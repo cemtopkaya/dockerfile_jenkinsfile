@@ -89,7 +89,7 @@ pipeline {
                     cd ${WORKSPACE}/''' + NF_CLONE_DIRECTORY + '''
                     pwd
                     ls -al
-                    make fast_dist
+                    make dist_fast
                 '''
                     // make dist release=on
             }
