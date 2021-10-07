@@ -26,8 +26,10 @@ pipeline {
         booleanParam(name: 'CLEAN_WORKSPACE', defaultValue: false, description: 'Clear Workspace') 
         string(name: 'NF_REPO_URL', defaultValue: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/~cem.topkaya/cinar_amf.git', description: 'NF Repo adresi') 
         string(name: 'NF_BRANCH_NAME', defaultValue: 'nokia', description: 'NF Brans adi') 
+        string(name: 'NF_REPO_CRED_ID', defaultValue: 'bb_cem.topkaya', description: 'NF Repo credential id') 
         string(name: 'YAML_REPO_URL', defaultValue: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/cin/yaml.git', description: 'YAML Repo adresi') 
         string(name: 'YAML_BRANCH_NAME', defaultValue: 'master', description: 'YAML Brans adi')
+        string(name: 'YAML_REPO_CRED_ID', defaultValue: 'bb_cem.topkaya', description: 'YAML Repo credential id') 
         booleanParam(name: 'BUILD_NF', defaultValue: true, description: 'Starts to build')
         booleanParam(name: 'UPLOAD_DEBIAN_PACKAGE_TO_REPOSITORY', defaultValue: false, description: 'Upload debain package to repository') 
         string(name: 'DEBIAN_REPOSITORY_URL', defaultValue: 'http://192.168.13.173:8080/repos/latest', description: 'Repository address')
@@ -59,13 +61,13 @@ pipeline {
                     
                     if(params.YAML_BRANCH_NAME != null && !params.YAML_BRANCH_NAME.isEmpty()){
                         dir("${YAML_CLONE_DIRECTORY}") {
-                            git branch: "${params.YAML_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: "${params.YAML_REPO_URL}"
+                            git branch: "${params.YAML_BRANCH_NAME}", credentialsId: "${NF_REPO_CRED_ID}", url: "${params.YAML_REPO_URL}"
                         }
                     }
                     
                     if(params.NF_BRANCH_NAME != null && !params.NF_BRANCH_NAME.isEmpty()){
                         dir("${NF_CLONE_DIRECTORY}") {
-                            git branch: "${params.NF_BRANCH_NAME}", credentialsId: 'bb_cem.topkaya', url: "${params.NF_REPO_URL}"
+                            git branch: "${params.NF_BRANCH_NAME}", credentialsId: "${YAML_REPO_CRED_ID}", url: "${params.NF_REPO_URL}"
                         }
                     }
                 }
@@ -90,7 +92,7 @@ pipeline {
             }
         }
         
-        stage('Building debian package'){
+        stage('Uploading debian package'){
             when {
                 expression { params.UPLOAD_DEBIAN_PACKAGE_TO_REPOSITORY }
             }

@@ -26,17 +26,17 @@ FROM withlinuxtools as withdevelopmenttools
 RUN apt-get install -y cpp-jwt \
                        cppcheck \
                        g++ \
-                       g3log \
+                    #    g3log \
                        gdb \
                        git \
-                       googletest \
+                    #    googletest \
                        default-jre \
                        dkms \
-                       dpdk \
+                    #    dpdk \
                        make \
                        nano \
-                       python \
-                       rabbitmq-server
+                       python 
+                    #    rabbitmq-server
 #                      redis-server \
 #                      redis-tools \
 
@@ -84,4 +84,4 @@ FROM withdevelopmenttools
 # RUN mkdir -p /Source
 # WORKDIR /root
 
-ENTRYPOINT ["/sbin/init"]
+# ENTRYPOINT ["/sbin/init"]
