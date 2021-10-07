@@ -81,7 +81,7 @@ RUN apt-get install -y cpp-jwt \
 FROM withdevelopmenttools
 # RUN echo  "/opt/cinar/lib" > /etc/ld.so.conf.d/cinar.conf; ldconfig;
 # USER root
-RUN mkdir -p /Source
-WORKDIR /root
+# RUN mkdir -p /Source
+# WORKDIR /root
 
-# ENTRYPOINT ["/sbin/init"]
+ENTRYPOINT ["/sbin/init"]
