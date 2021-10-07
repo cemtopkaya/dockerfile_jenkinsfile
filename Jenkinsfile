@@ -9,6 +9,7 @@ pipeline {
        dockerfile {
            filename 'Dockerfile'
            dir '.'
+           args '--privileged'
            // label 'docker-cinardev'
        }
     }
