@@ -26,13 +26,13 @@ FROM withlinuxtools as withdevelopmenttools
 RUN apt-get install -y cpp-jwt \
                        cppcheck \
                        g++ \
-                    #    g3log \
+                       g3log \
                        gdb \
                        git \
-                    #    googletest \
+                       googletest \
                        default-jre \
                        dkms \
-                    #    dpdk \
+                       dpdk \
                        make \
                        nano \
                        python 
@@ -41,7 +41,7 @@ RUN apt-get install -y cpp-jwt \
 #                      redis-tools \
 
 
-# FROM withdevelopmenttools as withdevelopmentlibs
+FROM withdevelopmenttools as withdevelopmentlibs
 # RUN apt-get install -y  boost-all-dev \
 #                         certificate \
 #                         libncurses5-dev \
@@ -63,25 +63,23 @@ RUN apt-get install -y cpp-jwt \
 #                         uuid-dev
 
 
-# FROM withdevelopmentlibs as withcinartoolsandlibs
+FROM withdevelopmentlibs as withcinartoolsandlibs
 
 # RUN apt-get install -y  cinarcodegenerator \
 #                         cinarloggersink \
 #                         cinarcryptolib \
 #                         cinarframework-dbg
 
-
-# FROM withcinartoolsandlibs
-
 # RUN apt-get install -y cinarnnrfnfmanagement.15.201906-interworking.dbg \
 #                        cinarnnrfnfdiscovery.15.201906-interworking.dbg \
 #                        cinarnnrfaccesstoken.15.201906-interworking.dbg
 
 
-FROM withdevelopmenttools
+FROM withcinartoolsandlibs
 # RUN echo  "/opt/cinar/lib" > /etc/ld.so.conf.d/cinar.conf; ldconfig;
 # USER root
 # RUN mkdir -p /Source
 # WORKDIR /root
+RUN apt-get install -y openssh-server
 
-# ENTRYPOINT ["/sbin/init"]
+ENTRYPOINT ["/sbin/init"]
