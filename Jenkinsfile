@@ -87,6 +87,8 @@ pipeline {
                     export CINAR_YAML_DIR=${WORKSPACE}/''' + YAML_CLONE_DIRECTORY + '''
                     echo "CINAR_YAML_DIR: $CINAR_YAML_DIR"
                     cd ${WORKSPACE}/''' + NF_CLONE_DIRECTORY + '''
+                    pwd
+                    ls -al
                     make fast_dist
                 '''
                     // make dist release=on
