@@ -22,13 +22,14 @@ pipeline {
     
     // https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/~cem.topkaya/cinar_amf.git
     // https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/~cem.topkaya/cinar_nrf.git
+    // https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/cin/yaml.git
     
     parameters { 
         booleanParam(name: 'CLEAN_WORKSPACE', defaultValue: false, description: 'Clear Workspace') 
-        string(name: 'NF_REPO_URL', defaultValue: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/~cem.topkaya/cinar_amf.git', description: 'NF Repo adresi') 
+        string(name: 'NF_REPO_URL', defaultValue: 'ssh://git@bitbucket.ulakhaberlesme.com.tr:7999/~cem.topkaya/cinar_amf.git', description: 'NF Repo adresi') 
         string(name: 'NF_BRANCH_NAME', defaultValue: 'nokia', description: 'NF Brans adi') 
         string(name: 'NF_REPO_CRED_ID', defaultValue: 'bitbucket_cem.topkaya', description: 'NF Repo credential id') 
-        string(name: 'YAML_REPO_URL', defaultValue: 'https://cem.topkaya@bitbucket.ulakhaberlesme.com.tr:8443/scm/cin/yaml.git', description: 'YAML Repo adresi') 
+        string(name: 'YAML_REPO_URL', defaultValue: 'ssh://git@bitbucket.ulakhaberlesme.com.tr:7999/cin/yaml.git', description: 'YAML Repo adresi') 
         string(name: 'YAML_BRANCH_NAME', defaultValue: 'master', description: 'YAML Brans adi')
         string(name: 'YAML_REPO_CRED_ID', defaultValue: 'bitbucket_cem.topkaya', description: 'YAML Repo credential id') 
         booleanParam(name: 'BUILD_NF', defaultValue: true, description: 'Starts to build')
