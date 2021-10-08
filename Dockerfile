@@ -107,9 +107,32 @@ USER root
 #----------------------------------------------#
 RUN echo "192.168.10.14 bitbucket.ulakhaberlesme.com.tr" >> /etc/hosts 
 
+
+#---------- SSL SERTİFİKALARI -----------------#
+#                                              #
+# bitbucket.ulakhaberlesme.com.tr adresine     #
+# https ile giriş yapabilmek için sertifikaları#
+# konteyner içine çekiyoruz.                   #
+#                                              #
+# git Bağlantılarında kullanılacak sertifika   #
+# bitbucket sunucusuyla aynı olmasının ayarını #
+# yapıyoruz.                                   #
+#                                              #
+#----------------------------------------------#
 ADD http://192.168.13.47/ssl_certificate/ca-certificate.crt /etc/ssl/certs/
-RUN update-ca-certificates && \
-    git config --global http.sslCAinfo /etc/ssl/certs/ca-certificates.crt
+RUN update-ca-certificates
+RUN git config --global http.sslCAinfo /etc/ssl/certs/ca-certificates.crt
+
+
+#---------- SSH GENEL AYARLARI ----------------#
+#                                              #
+# SSH İle bu konteynere root kullanıcısının    #
+# username & password ile giriş yapabilmesi    # 
+# için ssh ayarlarında sshd_config ayarını     #
+# değiştiriyoruz                               #
+#                                              #
+#----------------------------------------------#
+RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
 
 #---------- KULLANICI TANIMLARI ---------------#
@@ -133,6 +156,12 @@ RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
 RUN mkdir -p /root/.ssh
 RUN chmod 600 /root/.ssh/id_rsa
 RUN chown -R root:root /root/.ssh
+
+RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
+RUN chmod 600 /root/.ssh/id_rsa 
+RUN chown -R root:root /root/.ssh
+RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config 
+
 
 # Eğer bitbucket.ulakhaberlesme.com.tr adresine SSH yapıldığında hangi ayarların olacağını girelim:
 # - bağlantı kurulduğunda sunucu bilgisinin known_hosts dosyasında olup olmadığını kontrol etme
@@ -174,13 +203,6 @@ RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n"
 
 
 
-# root kullanıcısının ssh ile giriş yapabilmesi için
-RUN echo 'root:cicd123' | chpasswd 
-RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-    ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa && \
-    chmod 600 /root/.ssh/id_rsa && \
-    chown -R root:root /root/.ssh && \
-    echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config 
 
 # Standard SSH port
 EXPOSE 22
