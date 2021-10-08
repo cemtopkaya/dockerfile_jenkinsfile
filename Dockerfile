@@ -96,6 +96,7 @@ RUN sed -i 's|session    required     pam_loginuid.so|session    optional     pa
 #ADD settings.xml /home/jenkins/.m2/
 
 
+USER root
 
 #---------- DNS ÇÖZÜMLEMESİ -------------------#
 #                                              #
@@ -105,6 +106,11 @@ RUN sed -i 's|session    required     pam_loginuid.so|session    optional     pa
 #                                              #
 #----------------------------------------------#
 RUN echo "192.168.10.14 bitbucket.ulakhaberlesme.com.tr" >> /etc/hosts 
+
+ADD http://192.168.13.47/ssl_certificate/ca-certificate.crt /etc/ssl/certs/
+RUN update-ca-certificates && \
+    git config --global http.sslCAinfo /etc/ssl/certs/ca-certificates.crt
+
 
 #---------- KULLANICI TANIMLARI ---------------#
 #                                              #
@@ -166,9 +172,6 @@ RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n"
 # RUN chown -R jenkins:jenkins /home/jenkins/.m2/ && \
 #     chown -R jenkins:jenkins /home/jenkins/.ssh/
 
-ADD http://192.168.13.47/ssl_certificate/ca-certificate.crt /etc/ssl/certs/
-RUN update-ca-certificates && \
-    git config --global http.sslCAinfo /etc/ssl/certs/ca-certificates.crt
 
 
 # root kullanıcısının ssh ile giriş yapabilmesi için
