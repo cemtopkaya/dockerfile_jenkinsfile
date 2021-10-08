@@ -158,7 +158,7 @@ RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n"
 #----------------------------------------------#
 # RUN adduser --quiet --disabled-password --shell /bin/bash --home /home/jenkins --gecos "jenkins" jenkins
 RUN useradd -rm -d /home/jenkins -s /bin/bash -g root -u 1001 -G sudo jenkins
-RUN echo "jenkins:jenkins" | chpasswd
+RUN echo "jenkins:root" | chpasswd
 USER jenkins
 #---------- SSH ANAHTARLARI ---------------#
 # jenkinskullanıcısı için public & private anahtar üretip değiştirilmez olarak işaretliyoruz
