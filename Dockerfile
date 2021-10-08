@@ -152,11 +152,7 @@ RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/s
 
 RUN echo "root:cicd123" | chpasswd
 # root kullanıcısı için public & private anahtar üretip değiştirilmez olarak işaretliyoruz
-RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
 RUN mkdir -p /root/.ssh
-RUN chmod 600 /root/.ssh/id_rsa
-RUN chown -R root:root /root/.ssh
-
 RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
 RUN chmod 600 /root/.ssh/id_rsa 
 RUN chown -R root:root /root/.ssh
