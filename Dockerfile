@@ -187,12 +187,19 @@ RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n"
 USER root
 #---------- DNS ÇÖZÜMLEMESİ -------------------#
 #                                              #
-# bitbucket.ulakhaberlesme.com.tr adresine     #
-# erişmesi için hostname çözümlemesi için      #
-# /etc/hosts dosyasına bilgiyi gireceğiz       #
+# repo adresi olan alanadi.com.tr adresine     #
+# erişmesi için /etc/hosts dosyasına           #
+# echo "192.168.16.12 alanadi" >> /etc/hosts   #
+# /etc/hosts dosyasına girdi yapsak bile       #
+# konteyner oluşturulurken geri alınacağı için #
+# konteyner oluşturma komutuna arguman olarak  #
+# gireceğiz:                                   #
+#   --add-host alanadi.com.tr:192.168.16.12    #
 #                                              #
 #----------------------------------------------#
-RUN echo "192.168.10.14 bitbucket.ulakhaberlesme.com.tr" >> /etc/hosts 
+# RUN echo "192.168.10.14 bitbucket.ulakhaberlesme.com.tr" >> /etc/hosts 
+
+RUN apt-get install -qy sshpass
 
 # Standard SSH port
 EXPOSE 22
