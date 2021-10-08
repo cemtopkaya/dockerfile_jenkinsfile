@@ -184,7 +184,7 @@ RUN chown -R jenkins /home/jenkins/.ssh
 RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n" >> /home/jenkins/.ssh/config 
 
 
-USER root
+# USER root
 #---------- DNS ÇÖZÜMLEMESİ -------------------#
 #                                              #
 # repo adresi olan alanadi.com.tr adresine     #
