@@ -157,6 +157,7 @@ RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n"
 #                                              #
 #----------------------------------------------#
 # RUN adduser --quiet --disabled-password --shell /bin/bash --home /home/jenkins --gecos "jenkins" jenkins
+RUN groupadd -g 1000 jenkins
 RUN useradd -rm -d /home/jenkins -s /bin/bash -g jenkins -u 1000 jenkins
 RUN echo "jenkins:jenkins" | chpasswd
 USER jenkins
