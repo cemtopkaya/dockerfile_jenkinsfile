@@ -9,7 +9,7 @@ pipeline {
        dockerfile {
            filename 'Dockerfile'
            dir '.'
-           args '--privileged --user=root'
+           args '--privileged --user=root --add-host bitbucket.ulakhaberlesme.com.tr:192.168.10.14'
            // label 'docker-cinardev'
        }
     }
