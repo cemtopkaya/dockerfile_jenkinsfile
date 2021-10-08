@@ -81,7 +81,6 @@ FROM withcinartoolsandlibs
 
 USER root
 RUN echo "root:sifre" | chpasswd
-
 # RUN mkdir -p /Source
 # WORKDIR /root
 
@@ -105,8 +104,8 @@ RUN sed -i 's|session    required     pam_loginuid.so|session    optional     pa
 # USER jenkins
 # Set password for the jenkins user (you may want to alter this).
 # Add user jenkins to the image
-RUN useradd -rm -d /home/jenkins -s /bin/bash -g root -u 1001  -G sudo jenkins
 # RUN adduser --quiet --disabled-password --shell /bin/bash --home /home/jenkins --gecos "jenkins" jenkins
+RUN useradd -rm -d /home/jenkins -s /bin/bash -g root -u 1001  -G sudo jenkins
 RUN echo "jenkins:jenkins" | chpasswd
 
 RUN mkdir /home/jenkins/.m2
@@ -117,6 +116,21 @@ RUN echo "" > /home/jenkins/.ssh/authorized_keys
 # RUN chown -R jenkins:jenkins /home/jenkins/.m2/ && \
 #     chown -R jenkins:jenkins /home/jenkins/.ssh/
 
+ADD http://192.168.13.47/ssl_certificate/ca-certificate.crt /etc/ssl/certs/
+RUN update-ca-certificates && \
+    git config --global http.sslCAinfo /etc/ssl/certs/ca-certificates.crt
+
+# DNS Çözümleme için
+RUN echo "192.168.10.14 bitbucket.ulakhaberlesme.com.tr" >> /etc/hosts 
+
+# root kullanıcısının ssh ile giriş yapabilmesi için
+RUN echo 'root:cicd123' | chpasswd 
+RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa && \
+    chmod 600 /root/.ssh/id_rsa && \
+    chown -R root:root /root/.ssh && \
+    echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config 
+
 # Standard SSH port
 EXPOSE 22
 
@@ -125,4 +139,5 @@ EXPOSE 22
 
 # /sbin/init için root kullanıcısıyla devam etmek gerekiyor
 USER root
+WORKDIR /home/jenkins
 ENTRYPOINT ["/sbin/init"]
