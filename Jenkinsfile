@@ -9,7 +9,7 @@ pipeline {
        dockerfile {
            filename 'Dockerfile'
            dir '.'
-           args '--privileged --user=jenkins --add-host bitbucket.ulakhaberlesme.com.tr:192.168.10.14 -v /var/run/docker.sock:/var/run/docker.sock '
+           args '--privileged --user=root --add-host bitbucket.ulakhaberlesme.com.tr:192.168.10.14 -v /var/run/docker.sock:/var/run/docker.sock '
            // label 'docker-cinardev'
        }
     }
