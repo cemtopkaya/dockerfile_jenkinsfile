@@ -201,5 +201,6 @@ EXPOSE 22
 # CMD ["/usr/sbin/sshd", "-D"]
 
 # /sbin/init için root kullanıcısıyla devam etmek gerekiyor
+USER jenkins
 WORKDIR /home/jenkins
 ENTRYPOINT ["/sbin/init"]
