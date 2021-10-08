@@ -83,6 +83,7 @@ FROM withcinartoolsandlibs
 RUN apt-get -qy full-upgrade && \
 # Install a basic SSH server
     apt-get install -qy \
+               sudo \
                sshpass \
                openssh-server \
                openjdk-8-jdk && \
@@ -158,8 +159,9 @@ RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n"
 #----------------------------------------------#
 # RUN adduser --quiet --disabled-password --shell /bin/bash --home /home/jenkins --gecos "jenkins" jenkins
 RUN groupadd -g 1000 jenkins
-RUN useradd -rm -d /home/jenkins -s /bin/bash -g jenkins -u 1000 jenkins
+RUN useradd -rm -d /home/jenkins -s /bin/bash -g jenkins -G sudo -u 1000 jenkins
 RUN echo "jenkins:jenkins" | chpasswd
+RUN echo "jenkins  ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
 USER jenkins
 #---------- SSH ANAHTARLARI ---------------#
 # jenkinskullanıcısı için public & private anahtar üretip değiştirilmez olarak işaretliyoruz
