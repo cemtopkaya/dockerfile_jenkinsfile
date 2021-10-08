@@ -79,6 +79,13 @@ FROM withdevelopmentlibs as withcinartoolsandlibs
 # https://devopscube.com/docker-containers-as-build-slaves-jenkins/#Configure_a_Docker_Host_With_Remote_API_Important
 FROM withcinartoolsandlibs
 
+ARG VERSION=4.10
+ARG user=jenkins
+ARG group=jenkins
+ARG uid=1000
+ARG gid=2000
+ARG AGENT_WORKDIR=/home/${user}/agent
+
 # Make sure the package repository 6is up to date.
 RUN apt-get -qy full-upgrade && \
 # Install a basic SSH server
@@ -88,7 +95,8 @@ RUN apt-get -qy full-upgrade && \
                openssh-server \
                openjdk-8-jdk && \
 # Cleanup old packages
-    apt-get -qy autoremove
+    apt-get -qy autoremove && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN sed -i 's|session    required     pam_loginuid.so|session    optional     pam_loginuid.so|g' /etc/pam.d/sshd && \
     mkdir -p /var/run/sshd
@@ -158,7 +166,7 @@ RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n"
 #                                              #
 #----------------------------------------------#
 # RUN adduser --quiet --disabled-password --shell /bin/bash --home /home/jenkins --gecos "jenkins" jenkins
-RUN groupadd -g 2000 jenkins
+RUN groupadd -g ${gid} ${group}
 
 # -m : ev dizini oluştur (/home/kullanıcı_adı)
 # -M : ev dizini yaratma
@@ -168,7 +176,7 @@ RUN groupadd -g 2000 jenkins
 # -g : Grup yarat (-g yazilimci > yazilimci grubu yaratır)
 # -G : Oluşturulan kullanıcıyı gruplara ekle (-G sudo,developers,muhasebeciler)
 # -s : Varsaylan shell ataması yap (-s /bin/sh > kullanıcı girdiğinde sh konsolu olur)
-RUN useradd -m -u 1001 -g jenkins -G sudo -s /bin/bash jenkins 
+RUN useradd -c "Jenkins kullanicisi" -d /home/${user} -u ${uid} -g ${gid} -m -G sudo -s /bin/bash ${user}
 RUN echo "jenkins:jenkins" | chpasswd
 
 # sudoer olarak ekle ve sudo komutları için şifre sorma
@@ -195,7 +203,6 @@ RUN chown -R jenkins /home/jenkins/.ssh
 RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n" >> /home/jenkins/.ssh/config 
 
 
-
 #---------- DNS ÇÖZÜMLEMESİ -------------------#
 #                                              #
 # repo adresi olan alanadi.com.tr adresine     #
@@ -215,35 +222,43 @@ RUN chown -R jenkins:jenkins /home/jenkins/workspace
 
 USER root
 RUN curl --create-dirs -fsSLo /usr/share/jenkins/agent.jar \
-        https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/4.9/remoting-4.9.jar 
+        https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar 
 RUN chown -R jenkins:jenkins /usr/share/jenkins
 RUN chmod 755 /usr/share/jenkins
 RUN chmod 644 /usr/share/jenkins/agent.jar
 RUN ln -sf /usr/share/jenkins/agent.jar /usr/share/jenkins/slave.jar 
 
-# RUN sudo tee -a /etc/systemd/jenkis-slave.service << END \
-# [Unit]\
-# Description=Jenkins Slave\
-# Wants=network.target\
-# After=network.target\
-# \
-# [Service]\
-# ExecStart=/usr/bin/java -Xms512m -Xmx512m -jar /usr/share/jenkins/agent.jar -jnlpUrl http://${JENKINS_SERVER}/slave-agent.jnlp -secret ${SECRET}\
-# User=jenkins\
-# Restart=always\
-# RestartSec=10\
-# StartLimitInterval=0\
-# \
-# [Install]\
-# WantedBy=multi-user.target\
-# END
+RUN sudo tee -a /etc/systemd/jenkins-slave.service << END \
+[Unit]\
+Description=Jenkins Slave\
+Wants=network.target\
+After=network.target\
+\
+[Service]\
+ExecStart=/usr/bin/java -Xms512m -Xmx512m -jar /usr/share/jenkins/agent.jar\
+#ExecStart=/usr/bin/java -Xms512m -Xmx512m -jar /usr/share/jenkins/agent.jar -jnlpUrl http://192.168.13.38:8080/slave-agent.jnlp -secret ${SECRET}\
+User=jenkins\
+Restart=always\
+RestartSec=10\
+StartLimitInterval=0\
+\
+[Install]\
+WantedBy=multi-user.target\
+END
 
 # Sadece bir executable için root kullanıcısı gerekmez
 # CMD ["/usr/sbin/sshd", "-D"]
 
 # /sbin/init için root kullanıcısıyla devam etmek gerekiyor
 # USER jenkins
-WORKDIR /home/jenkins
+
+USER ${user}
+ENV AGENT_WORKDIR=${AGENT_WORKDIR}
+RUN mkdir /home/${user}/.jenkins && mkdir -p ${AGENT_WORKDIR}
+
+VOLUME /home/${user}/.jenkins
+VOLUME ${AGENT_WORKDIR}
+WORKDIR /home/${user}
 
 # Standard SSH port
 EXPOSE 22/tcp
