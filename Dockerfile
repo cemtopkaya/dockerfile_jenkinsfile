@@ -221,22 +221,22 @@ RUN chmod 755 /usr/share/jenkins
 RUN chmod 644 /usr/share/jenkins/agent.jar
 RUN ln -sf /usr/share/jenkins/agent.jar /usr/share/jenkins/slave.jar 
 
-RUN sudo tee -a /etc/systemd/jenkis-slave.service << END \
-[Unit]\
-Description=Jenkins Slave\
-Wants=network.target\
-After=network.target\
-\
-[Service]\
-ExecStart=/usr/bin/java -Xms512m -Xmx512m -jar /usr/share/jenkins/agent.jar -jnlpUrl http://${JENKINS_SERVER}/slave-agent.jnlp -secret ${SECRET}\
-User=jenkins\
-Restart=always\
-RestartSec=10\
-StartLimitInterval=0\
-\
-[Install]\
-WantedBy=multi-user.target\
-END
+# RUN sudo tee -a /etc/systemd/jenkis-slave.service << END \
+# [Unit]\
+# Description=Jenkins Slave\
+# Wants=network.target\
+# After=network.target\
+# \
+# [Service]\
+# ExecStart=/usr/bin/java -Xms512m -Xmx512m -jar /usr/share/jenkins/agent.jar -jnlpUrl http://${JENKINS_SERVER}/slave-agent.jnlp -secret ${SECRET}\
+# User=jenkins\
+# Restart=always\
+# RestartSec=10\
+# StartLimitInterval=0\
+# \
+# [Install]\
+# WantedBy=multi-user.target\
+# END
 
 # Sadece bir executable için root kullanıcısı gerekmez
 # CMD ["/usr/sbin/sshd", "-D"]
