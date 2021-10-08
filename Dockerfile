@@ -158,10 +158,20 @@ RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n"
 #                                              #
 #----------------------------------------------#
 # RUN adduser --quiet --disabled-password --shell /bin/bash --home /home/jenkins --gecos "jenkins" jenkins
-RUN groupadd -g 1002 jenkins
-RUN useradd -rm -u 1001 -U jenkins -g jenkins -G sudo -d /home/jenkins -s /bin/bash
+RUN groupadd -g 2000 jenkins
+
+# -m : ev dizini oluştur (/home/kullanıcı_adı)
+# -M : ev dizini yaratma
+# -N : kullanıcı oluştur, grup oluşturma
+# -r : Sistem kullanıcısı oluştur
+# -d : /home/kullanıcı_adı haricinde bir başka yerde ev dizini yarat (-d /var/jenkins)
+# -g : Grup yarat (-g yazilimci > yazilimci grubu yaratır)
+# -G : Oluşturulan kullanıcıyı gruplara ekle (-G sudo,developers,muhasebeciler)
+# -s : Varsaylan shell ataması yap (-s /bin/sh > kullanıcı girdiğinde sh konsolu olur)
+RUN useradd -m -u 1001 -g jenkins -G sudo -s /bin/bash jenkins 
 RUN echo "jenkins:jenkins" | chpasswd
-# sudoer olarak ekle
+
+# sudoer olarak ekle ve sudo komutları için şifre sorma
 RUN echo "jenkins  ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers.d/jenkins
 RUN chmod 0440 /etc/sudoers.d/jenkins
 
