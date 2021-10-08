@@ -199,7 +199,7 @@ RUN mkdir -p /home/jenkins/workspace
 RUN chown -R jenkins:jenkins /home/jenkins/workspace
 
 USER root
-RUN curl --create-dirs -fsSLo /usr/share/jenkins/agent.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar 
+RUN curl --create-dirs -fsSLo /usr/share/jenkins/agent.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/4.9/remoting-4.9.jar 
 RUN chown -R jenkins:jenkins /usr/share/jenkins
 RUN chmod 755 /usr/share/jenkins
 RUN chmod 644 /usr/share/jenkins/agent.jar
