@@ -9,7 +9,7 @@ pipeline {
        dockerfile {
            filename 'Dockerfile'
            dir '.'
-           args '--privileged'
+           args '--privileged --user=jenkins'
            // label 'docker-cinardev'
        }
     }
