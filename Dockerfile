@@ -78,10 +78,12 @@ FROM withdevelopmentlibs as withcinartoolsandlibs
 
 # https://devopscube.com/docker-containers-as-build-slaves-jenkins/#Configure_a_Docker_Host_With_Remote_API_Important
 FROM withcinartoolsandlibs
-# USER root
+
+USER root
+RUN echo "root:sifre" | chpasswd
+
 # RUN mkdir -p /Source
 # WORKDIR /root
-
 
 # Make sure the package repository 6is up to date.
 RUN apt-get -qy full-upgrade && \
