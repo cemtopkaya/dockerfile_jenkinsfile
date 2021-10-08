@@ -159,9 +159,12 @@ RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n"
 #----------------------------------------------#
 # RUN adduser --quiet --disabled-password --shell /bin/bash --home /home/jenkins --gecos "jenkins" jenkins
 RUN groupadd -g 1002 jenkins
-RUN useradd -rm -d /home/jenkins -s /bin/bash -g jenkins -G sudo -u 1001 jenkins
+RUN useradd -rm -u 1001 -U jenkins -g jenkins -G sudo -d /home/jenkins -s /bin/bash
 RUN echo "jenkins:jenkins" | chpasswd
-RUN echo "jenkins  ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
+# sudoer olarak ekle
+RUN echo "jenkins  ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers.d/jenkins
+RUN chmod 0440 /etc/sudoers.d/jenkins
+
 USER jenkins
 #---------- SSH ANAHTARLARI ---------------#
 # jenkinskullanıcısı için public & private anahtar üretip değiştirilmez olarak işaretliyoruz
@@ -201,12 +204,29 @@ RUN mkdir -p /home/jenkins/workspace
 RUN chown -R jenkins:jenkins /home/jenkins/workspace
 
 USER root
-RUN curl --create-dirs -fsSLo /usr/share/jenkins/agent.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/4.9/remoting-4.9.jar 
+RUN curl --create-dirs -fsSLo /usr/share/jenkins/agent.jar \
+        https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/4.9/remoting-4.9.jar 
 RUN chown -R jenkins:jenkins /usr/share/jenkins
 RUN chmod 755 /usr/share/jenkins
 RUN chmod 644 /usr/share/jenkins/agent.jar
 RUN ln -sf /usr/share/jenkins/agent.jar /usr/share/jenkins/slave.jar 
 
+RUN sudo tee -a /etc/systemd/jenkis-slave.service << END \
+[Unit]\
+Description=Jenkins Slave\
+Wants=network.target\
+After=network.target\
+\
+[Service]\
+ExecStart=/usr/bin/java -Xms512m -Xmx512m -jar /usr/share/jenkins/agent.jar -jnlpUrl http://${JENKINS_SERVER}/slave-agent.jnlp -secret ${SECRET}\
+User=jenkins\
+Restart=always\
+RestartSec=10\
+StartLimitInterval=0\
+\
+[Install]\
+WantedBy=multi-user.target\
+END
 
 # Sadece bir executable için root kullanıcısı gerekmez
 # CMD ["/usr/sbin/sshd", "-D"]
