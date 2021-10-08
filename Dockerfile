@@ -229,7 +229,7 @@ RUN chmod 644 /usr/share/jenkins/agent.jar
 RUN ln -sf /usr/share/jenkins/agent.jar /usr/share/jenkins/slave.jar 
 
 # RUN sudo cat <<EOT >> /etc/systemd/jenkins-slave.service \
-RUN sudo echo '[Unit]\n\
+RUN sudo echo -e "[Unit]\n\
 Description=Jenkins Slave\n\
 Wants=network.target\n\
 After=network.target\n\
@@ -243,7 +243,7 @@ RestartSec=10\n\
 StartLimitInterval=0\n\
 \n\
 [Install]\n\
-WantedBy=multi-user.target' >  /etc/systemd/jenkins-slave.service
+WantedBy=multi-user.target" >  /etc/systemd/jenkins-slave.service
 
 # Sadece bir executable için root kullanıcısı gerekmez
 # CMD ["/usr/sbin/sshd", "-D"]
