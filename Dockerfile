@@ -79,11 +79,6 @@ FROM withdevelopmentlibs as withcinartoolsandlibs
 # https://devopscube.com/docker-containers-as-build-slaves-jenkins/#Configure_a_Docker_Host_With_Remote_API_Important
 FROM withcinartoolsandlibs
 
-USER root
-RUN echo "root:sifre" | chpasswd
-# RUN mkdir -p /Source
-# WORKDIR /root
-
 # Make sure the package repository 6is up to date.
 RUN apt-get -qy full-upgrade && \
 # Install a basic SSH server
@@ -100,18 +95,32 @@ RUN sed -i 's|session    required     pam_loginuid.so|session    optional     pa
 
 #ADD settings.xml /home/jenkins/.m2/
 
-# RUN apt-get install sudo
-# USER jenkins
+
+#---------- KULLANICI TANIMLARI ---------------#
+USER root
+RUN echo "root:cicd123" | chpasswd
+# root kullanıcısı için public & private anahtar üretip değiştirilmez olarak işaretliyoruz
+RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa && \
+    chmod 600 /root/.ssh/id_rsa && \
+    chown -R root:root /root/.ssh
+# Eğer bitbucket.ulakhaberlesme.com.tr adresine SSH yapıldığında hangi ayarların olacağını girelim:
+# - bağlantı kurulduğunda sunucu bilgisinin known_hosts dosyasında olup olmadığını kontrol etme
+RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config 
+
 # Set password for the jenkins user (you may want to alter this).
-# Add user jenkins to the image
+# jenkins Kullanıcısını ekleyelim yansıya
 # RUN adduser --quiet --disabled-password --shell /bin/bash --home /home/jenkins --gecos "jenkins" jenkins
-RUN useradd -rm -d /home/jenkins -s /bin/bash -g root -u 1001  -G sudo jenkins
+RUN useradd -rm -d /home/jenkins -s /bin/bash -g root -u 1001 -G sudo jenkins
 RUN echo "jenkins:jenkins" | chpasswd
+# jenkinskullanıcısı için public & private anahtar üretip değiştirilmez olarak işaretliyoruz
+RUN ssh-keygen -q -t rsa -N '' -f /home/jenkins/.ssh/id_rsa && \
+    chmod 600 /home/jenkins/.ssh/id_rsa && \
+    chown -R jenkins /home/jenkins/.ssh    
+# Eğer bitbucket.ulakhaberlesme.com.tr adresine SSH yapıldığında hangi ayarların olacağını girelim:
+# - bağlantı kurulduğunda sunucu bilgisinin known_hosts dosyasında olup olmadığını kontrol etme
+RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n" >> /home/jenkins/.ssh/config 
 
-RUN mkdir /home/jenkins/.m2
-
-# Copy authorized keys
-RUN mkdir -p /home/jenkins/.ssh
+# RUN mkdir -p /home/jenkins/.ssh
 RUN echo "" > /home/jenkins/.ssh/authorized_keys
 # RUN chown -R jenkins:jenkins /home/jenkins/.m2/ && \
 #     chown -R jenkins:jenkins /home/jenkins/.ssh/
