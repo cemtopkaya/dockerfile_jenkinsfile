@@ -82,22 +82,17 @@ FROM withcinartoolsandlibs
 # Make sure the package repository 6is up to date.
 RUN apt-get -qy full-upgrade && \
 # Install a basic SSH server
-    apt-get install -qy openssh-server
-
-RUN sed -i 's|session    required     pam_loginuid.so|session    optional     pam_loginuid.so|g' /etc/pam.d/sshd && \
-    mkdir -p /var/run/sshd && \
-# Install JDK 8 (latest stable edition at 2019-04-01)
-    apt-get install -qy openjdk-8-jdk && \
-# Install maven
-    # apt-get install -qy maven && \
+    apt-get install -qy \
+               sshpass \
+               openssh-server \
+               openjdk-8-jdk && \
 # Cleanup old packages
     apt-get -qy autoremove
 
-#ADD settings.xml /home/jenkins/.m2/
-
+RUN sed -i 's|session    required     pam_loginuid.so|session    optional     pam_loginuid.so|g' /etc/pam.d/sshd && \
+    mkdir -p /var/run/sshd
 
 USER root
-
 
 #---------- SSL SERTİFİKALARI -----------------#
 #                                              #
@@ -198,8 +193,6 @@ RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n"
 #                                              #
 #----------------------------------------------#
 # RUN echo "192.168.10.14 bitbucket.ulakhaberlesme.com.tr" >> /etc/hosts 
-
-RUN apt-get install -qy sshpass
 
 # Standard SSH port
 EXPOSE 22
