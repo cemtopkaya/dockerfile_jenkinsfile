@@ -228,23 +228,22 @@ RUN chmod 755 /usr/share/jenkins
 RUN chmod 644 /usr/share/jenkins/agent.jar
 RUN ln -sf /usr/share/jenkins/agent.jar /usr/share/jenkins/slave.jar 
 
-RUN sudo tee -a /etc/systemd/jenkins-slave.service << END \
-[Unit]\
-Description=Jenkins Slave\
-Wants=network.target\
-After=network.target\
-\
-[Service]\
-ExecStart=/usr/bin/java -Xms512m -Xmx512m -jar /usr/share/jenkins/agent.jar\
-#ExecStart=/usr/bin/java -Xms512m -Xmx512m -jar /usr/share/jenkins/agent.jar -jnlpUrl http://192.168.13.38:8080/slave-agent.jnlp -secret ${SECRET}\
-User=jenkins\
-Restart=always\
-RestartSec=10\
-StartLimitInterval=0\
-\
-[Install]\
-WantedBy=multi-user.target\
-END
+# RUN sudo cat <<EOT >> /etc/systemd/jenkins-slave.service \
+RUN sudo echo '[Unit]\n\
+Description=Jenkins Slave\n\
+Wants=network.target\n\
+After=network.target\n\
+\n\
+[Service]\n\
+ExecStart=/usr/bin/java -Xms512m -Xmx512m -jar /usr/share/jenkins/agent.jar\n\
+#ExecStart=/usr/bin/java -Xms512m -Xmx512m -jar /usr/share/jenkins/agent.jar -jnlpUrl http://192.168.13.38:8080/slave-agent.jnlp -secret ${SECRET}\n\
+User=jenkins\n\
+Restart=always\n\
+RestartSec=10\n\
+StartLimitInterval=0\n\
+\n\
+[Install]\n\
+WantedBy=multi-user.target' >  /etc/systemd/jenkins-slave.service
 
 # Sadece bir executable için root kullanıcısı gerekmez
 # CMD ["/usr/sbin/sshd", "-D"]
