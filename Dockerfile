@@ -198,10 +198,6 @@ RUN ssh-keygen -q -t rsa -N '' -f /home/jenkins/.ssh/id_rsa && \
 # - bağlantı kurulduğunda sunucu bilgisinin known_hosts dosyasında olup olmadığını kontrol etme
 RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n" >> /home/jenkins/.ssh/config 
 
-# RUN chown -R jenkins:jenkins /home/jenkins/.m2/ && \
-#     chown -R jenkins:jenkins /home/jenkins/.ssh/
-
-
 
 
 # Standard SSH port
