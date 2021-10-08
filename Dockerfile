@@ -96,25 +96,66 @@ RUN sed -i 's|session    required     pam_loginuid.so|session    optional     pa
 #ADD settings.xml /home/jenkins/.m2/
 
 
+
+#---------- DNS ÇÖZÜMLEMESİ -------------------#
+#                                              #
+# bitbucket.ulakhaberlesme.com.tr adresine     #
+# erişmesi için hostname çözümlemesi için      #
+# /etc/hosts dosyasına bilgiyi gireceğiz       #
+#                                              #
+#----------------------------------------------#
+RUN echo "192.168.10.14 bitbucket.ulakhaberlesme.com.tr" >> /etc/hosts 
+
 #---------- KULLANICI TANIMLARI ---------------#
+#                                              #
+# root ve jenkins Kullanıcılarını yansıya ekle #
+#                                              #
+#----------------------------------------------#
+
+# root Kullanıcısı ----------------------------#
+#                                              #
+# Kullanıcı adı: root                          #
+# Grubu: root                                  #
+# Şifresi: cicd123                             #
+# SSH Gizli Anahtarı: /root/.ssh/id_rsa        #
+#                                              #
+#----------------------------------------------#
 USER root
 RUN echo "root:cicd123" | chpasswd
 # root kullanıcısı için public & private anahtar üretip değiştirilmez olarak işaretliyoruz
-RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa && \
-    chmod 600 /root/.ssh/id_rsa && \
-    chown -R root:root /root/.ssh
+RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
+RUN mkdir -p /root/.ssh
+RUN chmod 600 /root/.ssh/id_rsa
+RUN chown -R root:root /root/.ssh
+
 # Eğer bitbucket.ulakhaberlesme.com.tr adresine SSH yapıldığında hangi ayarların olacağını girelim:
 # - bağlantı kurulduğunda sunucu bilgisinin known_hosts dosyasında olup olmadığını kontrol etme
 RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config 
 
-# Set password for the jenkins user (you may want to alter this).
-# jenkins Kullanıcısını ekleyelim yansıya
+
+# jenkins Kullanıcısı -------------------------#
+#                                              #
+# Kullanıcı adı: jenkins                       #
+# Grubu: jenkins                               #
+# Şifresi: jenkins                             #
+# SSH Gizli Anahtarı: ~/jenkins/.ssh/id_rsa    #
+#                                              #
+#----------------------------------------------#
 # RUN adduser --quiet --disabled-password --shell /bin/bash --home /home/jenkins --gecos "jenkins" jenkins
 RUN useradd -rm -d /home/jenkins -s /bin/bash -g root -u 1001 -G sudo jenkins
 RUN echo "jenkins:jenkins" | chpasswd
+USER jenkins
+#---------- SSH ANAHTARLARI ---------------#
 # jenkinskullanıcısı için public & private anahtar üretip değiştirilmez olarak işaretliyoruz
 RUN mkdir -p /home/jenkins/.ssh
+
+#---------- ~/.ssh/authorized_keys ---------------#
+# Ortak anahtar, SSH ile oturum açabilmek istediğiniz uzak bir sunucuya yüklenir. 
+# Anahtar, oturum açacağınız kullanıcı hesabındaki özel bir dosyaya eklenir.
+# Bir istemci SSH anahtarlarını kullanarak kimlik doğrulamayı denediğinde, sunucu istemcinin özel anahtara sahip olup olmadığını test edebilir.
+# İstemci özel anahtarın sahibi olduğunu kanıtlayabilirse, bir kabuk oturumu oluşturulur veya istenen komut yürütülür.
 RUN echo "" > /home/jenkins/.ssh/authorized_keys
+# 
 RUN ssh-keygen -q -t rsa -N '' -f /home/jenkins/.ssh/id_rsa && \
     chmod 600 /home/jenkins/.ssh/id_rsa && \
     chown -R jenkins /home/jenkins/.ssh    
@@ -129,8 +170,6 @@ ADD http://192.168.13.47/ssl_certificate/ca-certificate.crt /etc/ssl/certs/
 RUN update-ca-certificates && \
     git config --global http.sslCAinfo /etc/ssl/certs/ca-certificates.crt
 
-# DNS Çözümleme için
-RUN echo "192.168.10.14 bitbucket.ulakhaberlesme.com.tr" >> /etc/hosts 
 
 # root kullanıcısının ssh ile giriş yapabilmesi için
 RUN echo 'root:cicd123' | chpasswd 
