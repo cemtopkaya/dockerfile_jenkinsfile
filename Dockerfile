@@ -113,6 +113,8 @@ RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n"
 RUN useradd -rm -d /home/jenkins -s /bin/bash -g root -u 1001 -G sudo jenkins
 RUN echo "jenkins:jenkins" | chpasswd
 # jenkinskullanıcısı için public & private anahtar üretip değiştirilmez olarak işaretliyoruz
+RUN mkdir -p /home/jenkins/.ssh
+RUN echo "" > /home/jenkins/.ssh/authorized_keys
 RUN ssh-keygen -q -t rsa -N '' -f /home/jenkins/.ssh/id_rsa && \
     chmod 600 /home/jenkins/.ssh/id_rsa && \
     chown -R jenkins /home/jenkins/.ssh    
@@ -120,8 +122,6 @@ RUN ssh-keygen -q -t rsa -N '' -f /home/jenkins/.ssh/id_rsa && \
 # - bağlantı kurulduğunda sunucu bilgisinin known_hosts dosyasında olup olmadığını kontrol etme
 RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n" >> /home/jenkins/.ssh/config 
 
-RUN mkdir -p /home/jenkins/.ssh
-RUN echo "" > /home/jenkins/.ssh/authorized_keys
 # RUN chown -R jenkins:jenkins /home/jenkins/.m2/ && \
 #     chown -R jenkins:jenkins /home/jenkins/.ssh/
 
