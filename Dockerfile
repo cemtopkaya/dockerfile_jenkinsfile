@@ -158,8 +158,8 @@ RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n"
 #                                              #
 #----------------------------------------------#
 # RUN adduser --quiet --disabled-password --shell /bin/bash --home /home/jenkins --gecos "jenkins" jenkins
-RUN groupadd -g 1000 jenkins
-RUN useradd -rm -d /home/jenkins -s /bin/bash -g jenkins -G sudo -u 1000 jenkins
+RUN groupadd -g 1002 jenkins
+RUN useradd -rm -d /home/jenkins -s /bin/bash -g jenkins -G sudo -u 1001 jenkins
 RUN echo "jenkins:jenkins" | chpasswd
 RUN echo "jenkins  ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
 USER jenkins
