@@ -98,15 +98,6 @@ RUN sed -i 's|session    required     pam_loginuid.so|session    optional     pa
 
 USER root
 
-#---------- DNS ÇÖZÜMLEMESİ -------------------#
-#                                              #
-# bitbucket.ulakhaberlesme.com.tr adresine     #
-# erişmesi için hostname çözümlemesi için      #
-# /etc/hosts dosyasına bilgiyi gireceğiz       #
-#                                              #
-#----------------------------------------------#
-RUN echo "192.168.10.14 bitbucket.ulakhaberlesme.com.tr" >> /etc/hosts 
-
 
 #---------- SSL SERTİFİKALARI -----------------#
 #                                              #
@@ -156,8 +147,6 @@ RUN mkdir -p /root/.ssh
 RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
 RUN chmod 600 /root/.ssh/id_rsa 
 RUN chown -R root:root /root/.ssh
-RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config 
-
 
 # Eğer bitbucket.ulakhaberlesme.com.tr adresine SSH yapıldığında hangi ayarların olacağını girelim:
 # - bağlantı kurulduğunda sunucu bilgisinin known_hosts dosyasında olup olmadığını kontrol etme
@@ -187,14 +176,22 @@ RUN mkdir -p /home/jenkins/.ssh
 # İstemci özel anahtarın sahibi olduğunu kanıtlayabilirse, bir kabuk oturumu oluşturulur veya istenen komut yürütülür.
 RUN echo "" > /home/jenkins/.ssh/authorized_keys
 # 
-RUN ssh-keygen -q -t rsa -N '' -f /home/jenkins/.ssh/id_rsa && \
-    chmod 600 /home/jenkins/.ssh/id_rsa && \
-    chown -R jenkins /home/jenkins/.ssh    
+RUN ssh-keygen -q -t rsa -N '' -f /home/jenkins/.ssh/id_rsa
+RUN chmod 600 /home/jenkins/.ssh/id_rsa
+RUN chown -R jenkins /home/jenkins/.ssh    
 # Eğer bitbucket.ulakhaberlesme.com.tr adresine SSH yapıldığında hangi ayarların olacağını girelim:
 # - bağlantı kurulduğunda sunucu bilgisinin known_hosts dosyasında olup olmadığını kontrol etme
 RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n" >> /home/jenkins/.ssh/config 
 
 
+#---------- DNS ÇÖZÜMLEMESİ -------------------#
+#                                              #
+# bitbucket.ulakhaberlesme.com.tr adresine     #
+# erişmesi için hostname çözümlemesi için      #
+# /etc/hosts dosyasına bilgiyi gireceğiz       #
+#                                              #
+#----------------------------------------------#
+RUN echo "192.168.10.14 bitbucket.ulakhaberlesme.com.tr" >> /etc/hosts 
 
 # Standard SSH port
 EXPOSE 22
