@@ -212,7 +212,7 @@ RUN ln -sf /usr/share/jenkins/agent.jar /usr/share/jenkins/slave.jar
 # CMD ["/usr/sbin/sshd", "-D"]
 
 # /sbin/init için root kullanıcısıyla devam etmek gerekiyor
-USER jenkins
+# USER jenkins
 WORKDIR /home/jenkins
 
 # Standard SSH port
