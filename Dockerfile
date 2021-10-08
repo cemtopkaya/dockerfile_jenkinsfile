@@ -126,7 +126,7 @@ RUN update-ca-certificates && \
 # SSH Gizli Anahtarı: /root/.ssh/id_rsa        #
 #                                              #
 #----------------------------------------------#
-USER root
+
 RUN echo "root:cicd123" | chpasswd
 # root kullanıcısı için public & private anahtar üretip değiştirilmez olarak işaretliyoruz
 RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
