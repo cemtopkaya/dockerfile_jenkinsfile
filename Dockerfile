@@ -180,7 +180,7 @@ RUN chown -R jenkins /home/jenkins/.ssh
 RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n" >> /home/jenkins/.ssh/config 
 
 
-# USER root
+
 #---------- DNS ÇÖZÜMLEMESİ -------------------#
 #                                              #
 # repo adresi olan alanadi.com.tr adresine     #
@@ -198,14 +198,13 @@ RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n"
 RUN mkdir -p /home/jenkins/workspace
 RUN chown -R jenkins:jenkins /home/jenkins/workspace
 
+USER root
 RUN curl --create-dirs -fsSLo /usr/share/jenkins/agent.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar 
 RUN chown -R jenkins:jenkins /usr/share/jenkins
 RUN chmod 755 /usr/share/jenkins
 RUN chmod 644 /usr/share/jenkins/agent.jar
 RUN ln -sf /usr/share/jenkins/agent.jar /usr/share/jenkins/slave.jar 
 
-# Standard SSH port
-EXPOSE 22
 
 # Sadece bir executable için root kullanıcısı gerekmez
 # CMD ["/usr/sbin/sshd", "-D"]
@@ -213,4 +212,9 @@ EXPOSE 22
 # /sbin/init için root kullanıcısıyla devam etmek gerekiyor
 USER jenkins
 WORKDIR /home/jenkins
+
+# Standard SSH port
+EXPOSE 22/tcp
+EXPOSE 8080/tcp
+
 ENTRYPOINT ["/sbin/init"]
