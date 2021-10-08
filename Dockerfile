@@ -198,10 +198,11 @@ RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n"
 RUN mkdir -p /home/jenkins/workspace
 RUN chown -R jenkins:jenkins /home/jenkins/workspace
 
-# RUN curl --create-dirs -fsSLo /usr/share/jenkins/agent.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar 
-# RUN chown -R jenkins:jenkins /usr/share/jenkins
-# RUN chmod 755 /usr/share/jenkins   && chmod 644 /usr/share/jenkins/agent.jar
-# RUN ln -sf /usr/share/jenkins/agent.jar /usr/share/jenkins/slave.jar 
+RUN curl --create-dirs -fsSLo /usr/share/jenkins/agent.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar 
+RUN chown -R jenkins:jenkins /usr/share/jenkins
+RUN chmod 755 /usr/share/jenkins
+RUN chmod 644 /usr/share/jenkins/agent.jar
+RUN ln -sf /usr/share/jenkins/agent.jar /usr/share/jenkins/slave.jar 
 
 # Standard SSH port
 EXPOSE 22
