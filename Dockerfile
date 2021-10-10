@@ -235,7 +235,8 @@ Wants=network.target\n\
 After=network.target\n\
 \n\
 [Service]\n\
-ExecStart=/usr/bin/java -Xms512m -Xmx512m -jar /usr/share/jenkins/agent.jar\n\
+ExecStart=/usr/bin/java -jar /usr/share/jenkins/agent.jar\n\
+#ExecStart=/usr/bin/java -Xms512m -Xmx512m -jar /usr/share/jenkins/agent.jar\n\
 #ExecStart=/usr/bin/java -Xms512m -Xmx512m -jar /usr/share/jenkins/agent.jar -jnlpUrl http://192.168.13.38:8080/slave-agent.jnlp -secret ${SECRET}\n\
 User=jenkins\n\
 Restart=always\n\
