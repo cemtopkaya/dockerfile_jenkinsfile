@@ -243,7 +243,10 @@ RestartSec=10\n\
 StartLimitInterval=0\n\
 \n\
 [Install]\n\
-WantedBy=multi-user.target" >  /etc/systemd/jenkins-slave.service
+WantedBy=multi-user.target" >  /etc/systemd/system/jenkins-slave.service
+
+RUN systemctl enable jenkins-slave.service
+
 
 # Sadece bir executable için root kullanıcısı gerekmez
 # CMD ["/usr/sbin/sshd", "-D"]
