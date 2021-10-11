@@ -59,9 +59,9 @@ pipeline {
 
 
         stage('Clone Repos') {
-            ws("${env.JOB_NAME}") {
             steps{
                 script {
+            ws("${env.JOB_NAME}") {
                     echo "params.YAML_BRANCH_NAME: ${params.YAML_BRANCH_NAME}"
                     echo "params.NF_BRANCH_NAME.isEmpty(): ${params.NF_BRANCH_NAME.isEmpty()}"
                     
@@ -76,9 +76,9 @@ pipeline {
                             git branch: "${params.NF_BRANCH_NAME}", credentialsId: "${YAML_REPO_CRED_ID}", url: "${params.NF_REPO_URL}"
                         }
                     }
+            }
                 }
                
-            }
             }
         }
         
