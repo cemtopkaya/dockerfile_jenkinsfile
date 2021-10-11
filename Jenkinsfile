@@ -83,6 +83,8 @@ when {
 expression { params.BUILD_NF }
 }
 steps{
+    print "${WORKSPACE}"
+    print "${WORKSPACE}/nf"
 ws("${WORKSPACE}/nf") {
 sh '''
 export CINAR_BASE=/opt/cinar
