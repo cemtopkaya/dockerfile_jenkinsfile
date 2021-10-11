@@ -65,11 +65,9 @@ pipeline {
                     echo "params.NF_BRANCH_NAME.isEmpty(): ${params.NF_BRANCH_NAME.isEmpty()}"
                     
                     if(params.YAML_BRANCH_NAME != null && !params.YAML_BRANCH_NAME.isEmpty()){
-            ws("${env.JOB_NAME}") {
                         dir("${YAML_CLONE_DIRECTORY}") {
                             git branch: "${params.YAML_BRANCH_NAME}", credentialsId: "${NF_REPO_CRED_ID}", url: "${params.YAML_REPO_URL}"
                         }
-            }
                     }
                     
                     if(params.NF_BRANCH_NAME != null && !params.NF_BRANCH_NAME.isEmpty()){
@@ -77,8 +75,7 @@ pipeline {
                             git branch: "${params.NF_BRANCH_NAME}", credentialsId: "${YAML_REPO_CRED_ID}", url: "${params.NF_REPO_URL}"
                         }
                     }
-                }
-               
+                }               
             }
         }
         
