@@ -59,6 +59,7 @@ pipeline {
 
 
         stage('Clone Repos') {
+            ws("${env.JOB_NAME}") {
             steps{
                 script {
                     echo "params.YAML_BRANCH_NAME: ${params.YAML_BRANCH_NAME}"
@@ -77,8 +78,9 @@ pipeline {
                     }
                 }
                
-                // ws("${env.JOB_NAME}") { }
             }
+            }
+        }
         
         stage('Building project'){
             when {
