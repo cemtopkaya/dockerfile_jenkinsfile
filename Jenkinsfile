@@ -80,32 +80,7 @@ pipeline {
             }
         }
 
-//         stage('Building project'){
-// when {
-// expression { params.BUILD_NF }
-// }
-// steps{
-//     print "${WORKSPACE}"
-//     print "${WORKSPACE}/nf"
-// ws("${WORKSPACE}/nf") {
-// sh '''
-// export CINAR_BASE=/opt/cinar
-// export CINAR_CODE_GENERATOR_DIR=$CINAR_BASE/bin/ccg
-// echo "YAML_CLONE_DIRECTORY: ''' + YAML_CLONE_DIRECTORY + '''"
-// export CINAR_YAML_DIR=${WORKSPACE}/''' + YAML_CLONE_DIRECTORY + '''
-// echo "CINAR_YAML_DIR: $CINAR_YAML_DIR"
-// cd ${WORKSPACE}/''' + NF_CLONE_DIRECTORY + '''
-// pwd
-// ls -al
-// ls -Rl /etc/apt
-// cat /etc/apt/sources.list
-// cat /etc/apt/sources.list.d/cinar.list
-// make dist_fast
-// '''
-// // make dist release=on
-// }
-// }
-// }
+
         stage('Building project'){
             when {
                 expression { params.BUILD_NF }
@@ -123,7 +98,8 @@ pipeline {
                     ls -Rl /etc/apt
                     cat /etc/apt/sources.list
                     cat /etc/apt/sources.list.d/cinar.list
-                    make dist_fast
+                    apt-get update
+                    make prereqs
                 '''
                     // make dist release=on
             }
