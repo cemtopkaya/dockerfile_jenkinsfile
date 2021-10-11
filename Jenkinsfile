@@ -99,7 +99,7 @@ pipeline {
                     cat /etc/apt/sources.list
                     cat /etc/apt/sources.list.d/cinar.list
                     apt-get update
-                    make prereqs
+                    make dist_fast
                 '''
                     // make dist release=on
             }
