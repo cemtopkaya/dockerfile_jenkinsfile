@@ -92,6 +92,9 @@ pipeline {
                     cd ${WORKSPACE}/''' + NF_CLONE_DIRECTORY + '''
                     pwd
                     ls -al
+                    ls -Rl /etc/apt
+                    cat /etc/apt/sources.list
+                    cat /etc/apt/sources.list.d/cinar.list
                     make dist_fast
                 '''
                     // make dist release=on
