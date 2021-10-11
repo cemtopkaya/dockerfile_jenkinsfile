@@ -11,7 +11,7 @@ pipeline {
            dir '.'
            args '--privileged --user=root --add-host bitbucket.ulakhaberlesme.com.tr:192.168.10.14 -v /var/run/docker.sock:/var/run/docker.sock '
            // label 'docker-cinardev'
-           customWorkspace "${env.JOB_NAME}"
+        //    customWorkspace "${env.JOB_NAME}"
        }
     }
     
@@ -60,24 +60,25 @@ pipeline {
 
         stage('Clone Repos') {
             steps{
-                script {
-                    echo "params.YAML_BRANCH_NAME: ${params.YAML_BRANCH_NAME}"
-                    echo "params.NF_BRANCH_NAME.isEmpty(): ${params.NF_BRANCH_NAME.isEmpty()}"
-                    
-                    if(params.YAML_BRANCH_NAME != null && !params.YAML_BRANCH_NAME.isEmpty()){
-                        dir("${YAML_CLONE_DIRECTORY}") {
-                            git branch: "${params.YAML_BRANCH_NAME}", credentialsId: "${NF_REPO_CRED_ID}", url: "${params.YAML_REPO_URL}"
+                ws("${env.JOB_NAME}") {
+                    script {
+                        echo "params.YAML_BRANCH_NAME: ${params.YAML_BRANCH_NAME}"
+                        echo "params.NF_BRANCH_NAME.isEmpty(): ${params.NF_BRANCH_NAME.isEmpty()}"
+                        
+                        if(params.YAML_BRANCH_NAME != null && !params.YAML_BRANCH_NAME.isEmpty()){
+                            dir("${YAML_CLONE_DIRECTORY}") {
+                                git branch: "${params.YAML_BRANCH_NAME}", credentialsId: "${NF_REPO_CRED_ID}", url: "${params.YAML_REPO_URL}"
+                            }
                         }
-                    }
-                    
-                    if(params.NF_BRANCH_NAME != null && !params.NF_BRANCH_NAME.isEmpty()){
-                        dir("${NF_CLONE_DIRECTORY}") {
-                            git branch: "${params.NF_BRANCH_NAME}", credentialsId: "${YAML_REPO_CRED_ID}", url: "${params.NF_REPO_URL}"
+                        
+                        if(params.NF_BRANCH_NAME != null && !params.NF_BRANCH_NAME.isEmpty()){
+                            dir("${NF_CLONE_DIRECTORY}") {
+                                git branch: "${params.NF_BRANCH_NAME}", credentialsId: "${YAML_REPO_CRED_ID}", url: "${params.NF_REPO_URL}"
+                            }
                         }
                     }
                 }
             }
-        }
         
         stage('Building project'){
             when {
