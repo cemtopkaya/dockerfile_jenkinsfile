@@ -193,7 +193,9 @@ RUN echo "root:cicd123" | chpasswd
 #    o) IdentityFile ~/.ssh/id_rsa_bb >> hangi açık anahtar ile bu bağlantıyı doğrulamasını istediğimizi belirtiriz.                                              # 
 #       IdentityFile belirtilmezse varsayılan dosyayı (~/.ssh/id_rsa) kullanır                                                                                    # 
 #                                                                                                                                                                 #
-# Anahtar, oturum açacağınız kullanıcı hesabındaki özel bir dosyaya eklenir.                                                                             .        # 
+#    o) HostName  192.168.10.14  >> ister bağlantı kuracağımız uzak makinanın adı (ulakhaberlesme.com.tr ister IP adresi olur)                                    # 
+#                                                                                                                                                                 #
+# Anahtar, oturum açacağınız kullanıcı hesabındaki özel bir dosyaya eklenir.                                                                             .        #
 # Bir istemci SSH anahtarlarını kullanarak kimlik doğrulamayı denediğinde, sunucu istemcinin özel anahtara sahip olup olmadığını test edebilir.                   # 
 # İstemci özel anahtarın sahibi olduğunu kanıtlayabilirse, bir kabuk oturumu oluşturulur veya istenen komut yürütülür.                                            #
 #                                                                                                                                                                 #
@@ -274,6 +276,7 @@ RUN chmod 600 /home/jenkins/.ssh/id_rsa_bb
 RUN cat << EOF > /root/.ssh/config \
 Host bitbucket.ulakhaberlesme.com.tr\
     HostName 192.168.10.14\
+    Port 7999\
     IdentityFile ~/.ssh/id_rsa_bb\
     StrictHostKeyChecking no\
 EOF
