@@ -146,15 +146,71 @@ RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/s
 #----------------------------------------------#
 
 RUN echo "root:cicd123" | chpasswd
+#---------- SSH root KULLANICI AYARLARI --------------------------------------------------------------------------------------------------------------------------
+#                                                                                                                                                                 #
+# PUBLIC anahtara ortak, PRIVATE anahtara gizli anahtar diyelim.                                                                                                  #
+#                                                                                                                                                                 #
+# >>>> mkdir -p /root/.ssh                                                                                                                                        #
+# ~/.ssh dizininde private ve public anahtarlar yaratacağız.                                                                             .                        #
+#                                                                                                                                                                 #
+# >>>> ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa                                                                                                            # 
+# -t rsa >> Gizli anahtarı RSA şifreleme ile üret                                                                                                                 # 
+# -f /root/.ssh/id_rsa >> Ürettiğin gizli anahtarı id_rsa adındaki dosyaya, açığı ise id_rsa.pub dosyasına çıkar.                                                 # 
+# -N '' >> Gizli anahtarı her kullanmak istediğimizde parola sormasın diye şifresiz oluşturacağız                                                                 # 
+#                                                                                                                                                                 #
+# >>>> chmod 600 /root/.ssh/id_rsa                                                                                                                                # 
+# Gizli anahtara sadece sahibi erişip okuyabilir veya silebilir (silinmez olması daha iyi olur).                                                                  # 
+# -rw------- /root/.ssh/id_rsa                                                                                                                                    # 
+#                                                                                                                                                                 #
+# >>>> chown -R root:root /root/.ssh                                                                                                                              # 
+# .ssh Dizinine sadece kullanıcı sahip olmalı                                                                                                                     # 
+# Ayar dosyasını sadece sahibi erişip değiştirebilir ama diğerleri okuyabilir                                                                                     # 
+# -rw-r--r-- /root/.ssh/config                                                                                                                                    # 
+#                                                                                                                                                                 #
+# Ortak anahtarı, SSH ile oturum açabilmek istediğiniz uzak bir sunucuya kopyalayacağız.                                                                          # 
+# Bitbucket, github gibi sunucularda kullanıcı doğrulaması için açık anahtarı kullanıcı bilgisi olarak kullancağız.                                               # 
+# Uzun ve karışık olduğu için kullanıcı adı olarak kullanılabilir ayrıca sunucu bu anahtarı kullanarak şifreli olarak veri akışını gerçekleştirecek.              # 
+#                                                                                                                                                                 #
+# ~/.ssh/config DOSYASININ İÇERİĞİ                                                                                                                                # 
+# Ref: https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix/                                                                                        # 
+#                                                                                                                                                                 #
+# Host bitbucket.ulakhaberlesme.com.tr                                                                                                                            # 
+#   HostName 192.168.10.14                                                                                                                                        # 
+#   IdentityFile ~/.ssh/id_rsa_bb                                                                                                                                 # 
+#   StrictHostKeyChecking no                                                                                                                                      # 
+#                                                                                                                                                                 #
+# git clone ssh://git_kullanici_adi@alanadi.com/kod_deposu_adı/kodDeposu.git komutu şunlara neden olur:                                                           # 
+#  - ssh protokolü yapılacakmış (ssh://...)                                                                                                                       # 
+#  - ~/.ssh/config dosyasını oku ve alanadi.com adresiyle tanımlı ayarlara eriş                                                                                   # 
+#    o) Varsayılan olarak uzak sunucuyu bilinen "bilinen sunucular (known_hosts)" dosyasında sorgular                                                             # 
+#       StrictHostKeyChecking no  >> ayarıyla sunucunun IP bilgisini "bilinen sunucular (known_hosts)" dosyasında aramaz                                          # 
+#       StrictHostKeyChecking yes >> olsaydı ve ~/.ssh/known_hosts dosyasında kayıtlı olmasaydı aşağıdaki hatayı alırdık:                                         # 
+#                                                                                                                                                                 #
+#           No RSA host key is known for [192.168.10.14]:7999 and you have requested strict checking.                                                             # 
+#           Host key verification failed.                                                                             .                                           # 
+#           fatal: Could not read from remote repository.                                                                             .                           # 
+#                                                                                                                                                                 #
+#    o) IdentityFile ~/.ssh/id_rsa_bb >> hangi açık anahtar ile bu bağlantıyı doğrulamasını istediğimizi belirtiriz.                                              # 
+#       IdentityFile belirtilmezse varsayılan dosyayı (~/.ssh/id_rsa) kullanır                                                                                    # 
+#                                                                                                                                                                 #
+# Anahtar, oturum açacağınız kullanıcı hesabındaki özel bir dosyaya eklenir.                                                                             .        # 
+# Bir istemci SSH anahtarlarını kullanarak kimlik doğrulamayı denediğinde, sunucu istemcinin özel anahtara sahip olup olmadığını test edebilir.                   # 
+# İstemci özel anahtarın sahibi olduğunu kanıtlayabilirse, bir kabuk oturumu oluşturulur veya istenen komut yürütülür.                                            #
+#                                                                                                                                                                 #
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
 # root kullanıcısı için public & private anahtar üretip değiştirilmez olarak işaretliyoruz
 RUN mkdir -p /root/.ssh
-RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
-RUN chmod 600 /root/.ssh/id_rsa 
+RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa_bb
+RUN chmod 600 /root/.ssh/id_rsa_bb
 RUN chown -R root:root /root/.ssh
 
-# Eğer bitbucket.ulakhaberlesme.com.tr adresine SSH yapıldığında hangi ayarların olacağını girelim:
-# - bağlantı kurulduğunda sunucu bilgisinin known_hosts dosyasında olup olmadığını kontrol etme
-RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config 
+RUN cat << EOF > /root/.ssh/config \
+Host bitbucket.ulakhaberlesme.com.tr\
+    HostName 192.168.10.14\
+    IdentityFile ~/.ssh/id_rsa_bb\
+    StrictHostKeyChecking no\
+EOF
 
 
 # jenkins Kullanıcısı -------------------------#
@@ -185,36 +241,55 @@ RUN chmod 0440 /etc/sudoers.d/jenkins
 
 USER jenkins
 #---------- SSH ANAHTARLARI ---------------#
-# jenkinskullanıcısı için public & private anahtar üretip değiştirilmez olarak işaretliyoruz
+
+#---------- ~/.ssh/authorized_keys -----------------------------------------------------------------------------------------#
+# Eğer bu makinaya jenkins kullanıcısıyla SSH üstünden                                                                      #
+# erişim sağlanmak istenirse kullanıcı doğrulama açık/gizli                                                                 #
+# anahtar üstünden yapılacaksa, doğrulamada kullanılacak                                                                    #
+# açık anahtar .ssh/authorized_keys dosyasına yazılabilir                                                                   #
+#                                                                                                                           #
+# Master Jenkins node bu agent'a SSH üstünden erişmek isterse                                                               #
+# authorized_keys dosyasına MASTER JENKINS'in açık anahtarını yazmak gerekir                                                #
+#                                                                                                                           #
+# authorized_keys DOSYASININ İÇERİĞİ                                                                                        #
+#                                                                                                                           #
+# # 192.168.2.* aralığındaki herekese (tüm alt ağa -subnet-) izin ver                                                       #
+# # 192.168.2.0/24 >> 8 bit (192 için) + 8 bit (168 için) + 8 bit (2 için) = 24                                             #
+# # Tüm alt ağa sadece bu adrese izin verme: 192.168.2.25                                                                   #
+# from="!192.168.2.25,192.168.2.*" ssh-ed25519 açık_anahtarı_buraya_yapıştır uzak_bağlantı_yapacak_kullanıcı_adı@makina_adı #
+#                                                                                                                           #
+# # Aynı şekilde IP aralığı yerine alan adına izin verebiliriz:                                                             #
+# # *.sweet.home alanına izin VER ama router.sweet.home alanına VERME                                                       #
+# from="!router.sweet.home,*.sweet.home" ssh-ed25519 my_random_pub_key_here jenkins@172.17.0.2                              #
+#                                                                                                                           #
+#---------------------------------------------------------------------------------------------------------------------------#
+# RUN echo "from="!192.168.2.25,192.168.2.*" ssh-ed25519 xxxx jenkins@localhost" >> /home/jenkins/.ssh/authorized_keys
+
 RUN mkdir -p /home/jenkins/.ssh
-
-#---------- ~/.ssh/authorized_keys ---------------#
-# Ortak anahtar, SSH ile oturum açabilmek istediğiniz uzak bir sunucuya yüklenir. 
-# Anahtar, oturum açacağınız kullanıcı hesabındaki özel bir dosyaya eklenir.
-# Bir istemci SSH anahtarlarını kullanarak kimlik doğrulamayı denediğinde, sunucu istemcinin özel anahtara sahip olup olmadığını test edebilir.
-# İstemci özel anahtarın sahibi olduğunu kanıtlayabilirse, bir kabuk oturumu oluşturulur veya istenen komut yürütülür.
 RUN echo "" > /home/jenkins/.ssh/authorized_keys
-# 
-RUN ssh-keygen -q -t rsa -N '' -f /home/jenkins/.ssh/id_rsa
-RUN chmod 600 /home/jenkins/.ssh/id_rsa
-RUN chown -R jenkins /home/jenkins/.ssh    
-# Eğer bitbucket.ulakhaberlesme.com.tr adresine SSH yapıldığında hangi ayarların olacağını girelim:
-# - bağlantı kurulduğunda sunucu bilgisinin known_hosts dosyasında olup olmadığını kontrol etme
-RUN echo -e "Host bitbucket.ulakhaberlesme.com.tr\n\tStrictHostKeyChecking no\n" >> /home/jenkins/.ssh/config 
+
+RUN ssh-keygen -q -t rsa -N '' -f /home/jenkins/.ssh/id_rsa_bb
+RUN chown -R jenkins /home/jenkins/.ssh
+RUN chmod 600 /home/jenkins/.ssh/id_rsa_bb
+RUN cat << EOF > /root/.ssh/config \
+Host bitbucket.ulakhaberlesme.com.tr\
+    HostName 192.168.10.14\
+    IdentityFile ~/.ssh/id_rsa_bb\
+    StrictHostKeyChecking no\
+EOF
 
 
-#---------- DNS ÇÖZÜMLEMESİ -------------------#
-#                                              #
-# repo adresi olan alanadi.com.tr adresine     #
-# erişmesi için /etc/hosts dosyasına           #
-# echo "192.168.16.12 alanadi" >> /etc/hosts   #
-# /etc/hosts dosyasına girdi yapsak bile       #
-# konteyner oluşturulurken geri alınacağı için #
-# konteyner oluşturma komutuna arguman olarak  #
-# gireceğiz:                                   #
-#   --add-host alanadi.com.tr:192.168.16.12    #
-#                                              #
-#----------------------------------------------#
+
+#---------- DNS ÇÖZÜMLEMESİ -------------------------------------------#
+#                                                                      #
+# repo adresi olan alanadi.com.tr adresine erişmesi için /etc/hosts    #
+# dosyasına `echo "192.168.16.12 alanadi" >> /etc/hosts` komutuyla     #
+# /etc/hosts dosyasına girdi yapsak bile konteyner oluşturulurken      #
+# geri alınacağı için konteyner oluşturma komutuna arguman olarak      #
+# gireceğiz:                                                           #
+#   --add-host alanadi.com.tr:192.168.16.12                            #
+#                                                                      #
+#----------------------------------------------------------------------#
 # RUN echo "192.168.10.14 bitbucket.ulakhaberlesme.com.tr" >> /etc/hosts 
 
 RUN mkdir -p /home/jenkins/workspace
