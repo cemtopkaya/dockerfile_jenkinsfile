@@ -35,7 +35,7 @@ RUN apt-get install -y cpp-jwt \
                        dpdk \
                        make \
                        nano \
-                       python 
+                       python
                     #    rabbitmq-server
 #                      redis-server \
 #                      redis-tools \
@@ -122,7 +122,7 @@ RUN git config --global http.sslCAinfo /etc/ssl/certs/ca-certificates.crt
 #---------- SSH GENEL AYARLARI ----------------#
 #                                              #
 # SSH İle bu konteynere root kullanıcısının    #
-# username & password ile giriş yapabilmesi    # 
+# username & password ile giriş yapabilmesi    #
 # için ssh ayarlarında sshd_config ayarını     #
 # değiştiriyoruz                               #
 #                                              #
@@ -153,51 +153,63 @@ RUN echo "root:cicd123" | chpasswd
 # >>>> mkdir -p /root/.ssh                                                                                                                                        #
 # ~/.ssh dizininde private ve public anahtarlar yaratacağız.                                                                             .                        #
 #                                                                                                                                                                 #
-# >>>> ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa                                                                                                            # 
-# -t rsa >> Gizli anahtarı RSA şifreleme ile üret                                                                                                                 # 
-# -f /root/.ssh/id_rsa >> Ürettiğin gizli anahtarı id_rsa adındaki dosyaya, açığı ise id_rsa.pub dosyasına çıkar.                                                 # 
-# -N '' >> Gizli anahtarı her kullanmak istediğimizde parola sormasın diye şifresiz oluşturacağız                                                                 # 
+# >>>> ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa                                                                                                            #
+# -t rsa >> Gizli anahtarı RSA şifreleme ile üret                                                                                                                 #
+# -f /root/.ssh/id_rsa >> Ürettiğin gizli anahtarı id_rsa adındaki dosyaya, açığı ise id_rsa.pub dosyasına çıkar.                                                 #
+# -N '' >> Gizli anahtarı her kullanmak istediğimizde parola sormasın diye şifresiz oluşturacağız                                                                 #
 #                                                                                                                                                                 #
-# >>>> chmod 600 /root/.ssh/id_rsa                                                                                                                                # 
-# Gizli anahtara sadece sahibi erişip okuyabilir veya silebilir (silinmez olması daha iyi olur).                                                                  # 
-# -rw------- /root/.ssh/id_rsa                                                                                                                                    # 
+# >>>> chmod 600 /root/.ssh/id_rsa                                                                                                                                #
+# Gizli anahtara sadece sahibi erişip okuyabilir veya silebilir (silinmez olması daha iyi olur).                                                                  #
+# -rw------- /root/.ssh/id_rsa                                                                                                                                    #
 #                                                                                                                                                                 #
-# >>>> chown -R root:root /root/.ssh                                                                                                                              # 
-# .ssh Dizinine sadece kullanıcı sahip olmalı                                                                                                                     # 
-# Ayar dosyasını sadece sahibi erişip değiştirebilir ama diğerleri okuyabilir                                                                                     # 
-# -rw-r--r-- /root/.ssh/config                                                                                                                                    # 
+# >>>> chown -R root:root /root/.ssh                                                                                                                              #
+# .ssh Dizinine sadece kullanıcı sahip olmalı                                                                                                                     #
+# Ayar dosyasını sadece sahibi erişip değiştirebilir ama diğerleri okuyabilir                                                                                     #
+# -rw-r--r-- /root/.ssh/config                                                                                                                                    #
 #                                                                                                                                                                 #
-# Ortak anahtarı, SSH ile oturum açabilmek istediğiniz uzak bir sunucuya kopyalayacağız.                                                                          # 
-# Bitbucket, github gibi sunucularda kullanıcı doğrulaması için açık anahtarı kullanıcı bilgisi olarak kullancağız.                                               # 
-# Uzun ve karışık olduğu için kullanıcı adı olarak kullanılabilir ayrıca sunucu bu anahtarı kullanarak şifreli olarak veri akışını gerçekleştirecek.              # 
+# Ortak anahtarı, SSH ile oturum açabilmek istediğiniz uzak bir sunucuya kopyalayacağız.                                                                          #
+# Bitbucket, github gibi sunucularda kullanıcı doğrulaması için açık anahtarı kullanıcı bilgisi olarak kullancağız.                                               #
+# Uzun ve karışık olduğu için kullanıcı adı olarak kullanılabilir ayrıca sunucu bu anahtarı kullanarak şifreli olarak veri akışını gerçekleştirecek.              #
 #                                                                                                                                                                 #
-# ~/.ssh/config DOSYASININ İÇERİĞİ                                                                                                                                # 
-# Ref: https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix/                                                                                        # 
+# ~/.ssh/config DOSYASININ İÇERİĞİ                                                                                                                                #
+# Ref: https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix/                                                                                        #
 #                                                                                                                                                                 #
-# Host bitbucket.ulakhaberlesme.com.tr                                                                                                                            # 
-#   HostName 192.168.10.14                                                                                                                                        # 
-#   IdentityFile ~/.ssh/id_rsa_bb                                                                                                                                 # 
-#   StrictHostKeyChecking no                                                                                                                                      # 
+# Host bitbucket.ulakhaberlesme.com.tr                                                                                                                            #
+#   HostName 192.168.10.14                                                                                                                                        #
+#   IdentityFile ~/.ssh/id_rsa_bb                                                                                                                                 #
+#   StrictHostKeyChecking no                                                                                                                                      #
 #                                                                                                                                                                 #
-# git clone ssh://git_kullanici_adi@alanadi.com/kod_deposu_adı/kodDeposu.git komutu şunlara neden olur:                                                           # 
-#  - ssh protokolü yapılacakmış (ssh://...)                                                                                                                       # 
-#  - ~/.ssh/config dosyasını oku ve alanadi.com adresiyle tanımlı ayarlara eriş                                                                                   # 
-#    o) Varsayılan olarak uzak sunucuyu bilinen "bilinen sunucular (known_hosts)" dosyasında sorgular                                                             # 
-#       StrictHostKeyChecking no  >> ayarıyla sunucunun IP bilgisini "bilinen sunucular (known_hosts)" dosyasında aramaz                                          # 
-#       StrictHostKeyChecking yes >> olsaydı ve ~/.ssh/known_hosts dosyasında kayıtlı olmasaydı aşağıdaki hatayı alırdık:                                         # 
+# git clone ssh://git_kullanici_adi@alanadi.com/kod_deposu_adı/kodDeposu.git komutu şunlara neden olur:                                                           #
+#  - ssh protokolü yapılacakmış (ssh://...)                                                                                                                       #
+#  - ~/.ssh/config dosyasını oku ve alanadi.com adresiyle tanımlı ayarlara eriş                                                                                   #
+#    o) Varsayılan olarak uzak sunucuyu bilinen "bilinen sunucular (known_hosts)" dosyasında sorgular                                                             #
+#       StrictHostKeyChecking no  >> ayarıyla sunucunun IP bilgisini "bilinen sunucular (known_hosts)" dosyasında aramaz                                          #
+#       StrictHostKeyChecking yes >> olsaydı ve ~/.ssh/known_hosts dosyasında kayıtlı olmasaydı aşağıdaki hatayı alırdık:                                         #
 #                                                                                                                                                                 #
-#           No RSA host key is known for [192.168.10.14]:7999 and you have requested strict checking.                                                             # 
-#           Host key verification failed.                                                                             .                                           # 
-#           fatal: Could not read from remote repository.                                                                             .                           # 
+#           No RSA host key is known for [192.168.10.14]:7999 and you have requested strict checking.                                                             #
+#           Host key verification failed.                                                                             .                                           #
+#           fatal: Could not read from remote repository.                                                                             .                           #
 #                                                                                                                                                                 #
-#    o) IdentityFile ~/.ssh/id_rsa_bb >> hangi açık anahtar ile bu bağlantıyı doğrulamasını istediğimizi belirtiriz.                                              # 
-#       IdentityFile belirtilmezse varsayılan dosyayı (~/.ssh/id_rsa) kullanır                                                                                    # 
+#    o) IdentityFile ~/.ssh/id_rsa_bb >> hangi açık anahtar ile bu bağlantıyı doğrulamasını istediğimizi belirtiriz.                                              #
+#       IdentityFile belirtilmezse varsayılan dosyayı (~/.ssh/id_rsa) kullanır                                                                                    #
 #                                                                                                                                                                 #
-#    o) HostName  192.168.10.14  >> ister bağlantı kuracağımız uzak makinanın adı (ulakhaberlesme.com.tr ister IP adresi olur)                                    # 
+#    o) HostName  192.168.10.14  >> ister bağlantı kuracağımız uzak makinanın adı (ulakhaberlesme.com.tr ister IP adresi olur)                                    #
 #                                                                                                                                                                 #
 # Anahtar, oturum açacağınız kullanıcı hesabındaki özel bir dosyaya eklenir.                                                                             .        #
-# Bir istemci SSH anahtarlarını kullanarak kimlik doğrulamayı denediğinde, sunucu istemcinin özel anahtara sahip olup olmadığını test edebilir.                   # 
+# Bir istemci SSH anahtarlarını kullanarak kimlik doğrulamayı denediğinde, sunucu istemcinin özel anahtara sahip olup olmadığını test edebilir.                   #
 # İstemci özel anahtarın sahibi olduğunu kanıtlayabilirse, bir kabuk oturumu oluşturulur veya istenen komut yürütülür.                                            #
+#                                                                                                                                                                 #
+# Bilinen Sunucular (known_hosts)                                                                                                                                 #
+# bitbucket.ulakhaberlesme.com.tr Adresini known_hosts içinden çıkar                                                                                              #
+# RUN sh 'ssh-keyscan -R bitbucket.ulakhaberlesme.com.tr'                                                                                                         #
+#                                                                                                                                                                 #
+# bitbucket.ulakhaberlesme.com.tr Adresini known_hosts'a ekle                                                                                                     #
+# RUN sh 'ssh-keyscan -H bitbucket.ulakhaberlesme.com.tr >> ~/.ssh/known_hosts'                                                                                   #
+#                                                                                                                                                                 #
+# git clone ssh://kullanici@alanadi/repo_adresi/repo.git   komutu da alanadi adresini known_hosts'a ekleyecektir                                                  #
+# git clone ssh://git@bitbucket.ulakhaberlesme.com.tr:7999/cin/yaml.git                                                                                           #
+# Cloning into 'yaml'...                                                                                                                                          #
+# Warning: Permanently added '[192.168.10.14]:7999' (RSA) to the list of known hosts.                                                                             #
 #                                                                                                                                                                 #
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
@@ -293,18 +305,18 @@ EOF
 #   --add-host alanadi.com.tr:192.168.16.12                            #
 #                                                                      #
 #----------------------------------------------------------------------#
-# RUN echo "192.168.10.14 bitbucket.ulakhaberlesme.com.tr" >> /etc/hosts 
+# RUN echo "192.168.10.14 bitbucket.ulakhaberlesme.com.tr" >> /etc/hosts
 
 RUN mkdir -p /home/jenkins/workspace
 RUN chown -R jenkins:jenkins /home/jenkins/workspace
 
 USER root
 RUN curl --create-dirs -fsSLo /usr/share/jenkins/agent.jar \
-        https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar 
+        https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar
 RUN chown -R jenkins:jenkins /usr/share/jenkins
 RUN chmod 755 /usr/share/jenkins
 RUN chmod 644 /usr/share/jenkins/agent.jar
-RUN ln -sf /usr/share/jenkins/agent.jar /usr/share/jenkins/slave.jar 
+RUN ln -sf /usr/share/jenkins/agent.jar /usr/share/jenkins/slave.jar
 
 # RUN sudo cat <<EOT >> /etc/systemd/jenkins-slave.service \
 RUN sudo echo -e "[Unit]\n\
