@@ -299,10 +299,8 @@ USER jenkins
 #---------- SSH ANAHTARLARI ---------------#
 
 #---------- ~/.ssh/authorized_keys -----------------------------------------------------------------------------------------#
-# Eğer bu makinaya jenkins kullanıcısıyla SSH üstünden                                                                      #
-# erişim sağlanmak istenirse kullanıcı doğrulama açık/gizli                                                                 #
-# anahtar üstünden yapılacaksa, doğrulamada kullanılacak                                                                    #
-# açık anahtar .ssh/authorized_keys dosyasına yazılabilir                                                                   #
+# Eğer bu makinaya jenkins kullanıcısıyla SSH üstünden erişim sağlanmak istenirse kullanıcı doğrulama açık/gizli anahtar    #
+# üstünden yapılacaksa, doğrulamada kullanılacak açık anahtar .ssh/authorized_keys dosyasına yazılabilir                    #
 #                                                                                                                           #
 # Master Jenkins node bu agent'a SSH üstünden erişmek isterse                                                               #
 # authorized_keys dosyasına MASTER JENKINS'in açık anahtarını yazmak gerekir                                                #
