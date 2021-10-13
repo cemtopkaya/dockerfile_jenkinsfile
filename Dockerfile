@@ -214,6 +214,52 @@ RUN echo "root:cicd123" | chpasswd
 # cat /root/.ssh/known_hosts                                                                                                                                      #
 # |1|2kMBR/fnEbbStRIffpMxkipQnH0=|YraZZ6qcAiOToZj06rDvfiSN63E= ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDLQUxlwuPRWM1atW3aPulUmwpR4paC1Zxae0ZMqSNSCkaGyBMqyjlKmy9eg  #
 #                                                                                                                                                                 #
+#                                                                                                                                                                 #
+# JENKINS ÜSTüNDEN GIT CLONE                                                                                                                                      #
+# Jenkins MASTER ve SLAVE üstünden git işlemini yapabiliriz                                                                                                       #
+# MASTER üstünden shell script ile veya git plugin'ini kullanarak git clone işlemi yapabiliriz:                                                                   #
+#  1) sh 'git clone ssh://git@......'                                                                                                                             #
+#     sh Nerede çalışıyorsa (master veya slave) o sistem üstünde ssh ayarlarını okuyarak doğrulama yapacaktır                                                     #
+#     - Kullanıcı adı ve şifresini sizden girmenizi bekleyerek doğrulama yaparsa JENKINS çakılır çünkü arka planda çalışacağı için sizin girişiniz mümkün olmaz   #
+#     - ~/.ssh/config içinde tanımlanmış IdentityFile ile belirtilmiş açık-gizli anahtarı kendisi bulup doğrulama yapabilir.                                      #
+#                                                                                                                                                                 #
+#  2) git changelog: false, credentialsId: 'aa', poll: false, url: 'ssh://git@bitbucket.ulakhaberlesme.com.tr:7999/cin/yaml.git'                                  #
+#     plugin jenkins master üstünde çalışarak credential manager kısmında tanımlı aa kullanıcı bilgilerine göre doğrulama yaparak git clone ile indirdiği veriyi  #
+#     slave olan jenkins agent'a kendi dizinini bağladığı yol ile paylaşır. Aşağıda master Jenkins agent Jenkinsfile içinde agent olarak docker agent yaratır:    #
+#                                                                                                                                                                 #
+#     pipeline {                                                                                                                                                  #
+#        agent {                                                                                                                                                  #
+#            docker {                                                                                                                                             #
+#                image 'slave_agent_yansi'                                                                                                                        #
+#            }                                                                                                                                                    #
+#        }                                                                                                                                                        #
+#        stages {                                                                                                                                                 #
+#            stage('Test') {                                                                                                                                      #
+#                steps {                                                                                                                                          #
+#                    git credentialsId: 'aa', url: 'ssh://git@bitbucket.ulakhaberlesme.com.tr:7999/cin/yaml.git'                                                  #
+#                }                                                                                                                                                #
+#            }                                                                                                                                                    #
+#        }                                                                                                                                                        #
+#     }                                                                                                                                                           #
+#                                                                                                                                                                 #
+#     - SSH bağlantı için "SSH username with private key" türünde "aa" adında bir credential Jenkins üstünde oluşturulur                                          #
+#     - Job çalıştırıldığında önce agent için docker yansısından bir konteyner oluşturulur ve WORKDIR olarak /var/jenkins_home_workspace/pipe3 dizinine geçilir   #
+#     - Master Jenkins içindeki dışarıya VOLUME ile açılmış dizin aynı dizin yoluyla --volumes-from anahtarıyla bu konteynere bağlanır:                           #
+#        -> docker inspect 25fd9afdc822563ed2cad1cde288a3e45e193e04d06c4b9ca91e9a7d9d607d3f komutunu çalıştırıp dışarıya açılmış volume gözlenir:                 #
+#        -> "Volumes": {                                                                                                                                          #
+#               "/var/jenkins_home": {}                                                                                                                           #
+#           },                                                                                                                                                    #
+#                                                                                                                                                                 #
+#     docker run -t -d -u 0:0                                                                                                                                     #
+#            -w /var/jenkins_home/workspace/pipe3                                                                                                                 #
+#            --volumes-from 25fd9afdc822563ed2cad1cde288a3e45e193e04d06c4b9ca91e9a7d9d607d3f -e ******** ...                                                      #
+#            slave_agent_yansi cat                                                                                                                                #
+#                                                                                                                                                                 #
+#     - Kısaca, git eklentisi kod havuzunu MASTER JENKINS içindeki /var/jenkins_home/workspace/pipe3 dizinine indirir ve konteyner içine bu dizini map ettiği için#
+#       konteyner içinde erişilebilir olur. Ama JENKINS master 10.10.0.1 makinasında ve DOCKER_HOST bilgisi 10.10.10.100 makinasını işaret ediyorsa, konteyner    #
+#       .100 makinasında oluşacağı için --volumes-from ile dizin bağlama çalışmayacaktır. Kod havuzu MASTER içindeki /var/jenkins_home/workspace/pipe3 dizinine   #
+#       indirilecek ancak DOCKER_HOST ile belirtilmiş makinaya bağlanmadığı için konteynere bağlanamayacak.                                                       #
+#                                                                                                                                                                 #
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 # root kullanıcısı için public & private anahtar üretip değiştirilmez olarak işaretliyoruz
