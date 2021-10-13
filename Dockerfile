@@ -210,6 +210,9 @@ RUN echo "root:cicd123" | chpasswd
 # git clone ssh://git@bitbucket.ulakhaberlesme.com.tr:7999/cin/yaml.git                                                                                           #
 # Cloning into 'yaml'...                                                                                                                                          #
 # Warning: Permanently added '[192.168.10.14]:7999' (RSA) to the list of known hosts.                                                                             #
+# ......                                                                                                                                                          #
+# cat /root/.ssh/known_hosts                                                                                                                                      #
+# |1|2kMBR/fnEbbStRIffpMxkipQnH0=|YraZZ6qcAiOToZj06rDvfiSN63E= ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDLQUxlwuPRWM1atW3aPulUmwpR4paC1Zxae0ZMqSNSCkaGyBMqyjlKmy9eg  #
 #                                                                                                                                                                 #
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
