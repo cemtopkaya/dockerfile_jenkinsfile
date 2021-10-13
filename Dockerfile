@@ -257,17 +257,19 @@ RUN echo "root:cicd123" | chpasswd
 
 # root kullanıcısı için public & private anahtar üretip değiştirilmez olarak işaretliyoruz
 RUN mkdir -p /root/.ssh
+RUN chown -R root:root /root/.ssh
+RUN chmod 700 /root/.ssh
+RUN echo "" > /root/.ssh/authorized_keys
+
 RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa_bb
 RUN chmod 600 /root/.ssh/id_rsa_bb
-RUN chown -R root:root /root/.ssh
-
-RUN cat << EOF > /root/.ssh/config \
+RUN chmod 644 /root/.ssh/id_rsa_bb.pub
+RUN echo -e '\
 Host bitbucket.ulakhaberlesme.com.tr\
     HostName 192.168.10.14\
     IdentityFile ~/.ssh/id_rsa_bb\
-    StrictHostKeyChecking no\
-EOF
-
+    StrictHostKeyChecking no' > /root/.ssh/config
+RUN chmod 644 /root/.ssh/config
 
 # jenkins Kullanıcısı -------------------------#
 #                                              #
@@ -320,18 +322,57 @@ USER jenkins
 # RUN echo "from="!192.168.2.25,192.168.2.*" ssh-ed25519 xxxx jenkins@localhost" >> /home/jenkins/.ssh/authorized_keys
 
 RUN mkdir -p /home/jenkins/.ssh
-RUN echo "" > /home/jenkins/.ssh/authorized_keys
-
-RUN ssh-keygen -q -t rsa -N '' -f /home/jenkins/.ssh/id_rsa_bb
 RUN chown -R jenkins /home/jenkins/.ssh
+RUN chmod 700 /home/jenkins/.ssh
+# 
+RUN echo -e '-----BEGIN RSA PRIVATE KEY-----\
+MIIEpAIBAAKCAQEAnnMefeGP03CZ2FUf/7rIQdiF+F0OuttGRC4t9nuFgoYkF1x6\
+QuiIehZg42FON5Fu436q8IXL4jXFpz9lM+xblff8NWNs7p1YJhSEqVKHx/Bpr7WD\
+H4Hocl1hCkbfHk8B1KE3aBBfX8OOZ2JYT4Jx5sQ6BgObj+fWI5wAno1il+A1wtCq\
+X/b9Uttl0Wlq/0tCZ4XHzx+ho7gNXdb7B7/fFK5BB46WTmedIwUQ8RCymfFLy+Yt\
+L5DgTZctZ1R4uZIck/ez+A2wTr/OpFrcNFPbnkJWcX2yHjBj5vDH+hsvIji5QURI\
+UKfVtS45OzGoKCajACzvwRPmPKPX3Uw1Bn3IrQIDAQABAoIBADz0lHpg1+/Dlau/\
+s7uxo3CRV5igVBZWXMXF7jCwfEAmUqQaE37B7h7plQRkXq7J6Brkk+ZL0o+HmC4r\
+GUfMWb9r0z7GrRVuuoaLxi1NbqbgOgg6j+MDGuVEPxyw/wyt4EpoauRByC8TECl9\
+j/OmfyMDwj6mDKZjzeGNFj/orFE4ePolsi8sazpXF/3GMhg+3Tu2t6VRiTrYvIZF\
+kHTPPOTLPP16gDghTBCCe0AMUpm11ca5Tc1uz1ci7qT6fwJRGc25KWM6/uxg0b7O\
+hvZPLggaOAZPeFqUwmzRC46p7wS7MwD33Hccvsk0VojVRTN6XB4ztG9vzRuVTZZ8\
+BBwvjIECgYEAzOoBbeQvpFvHs5D38EbhmZuScy3uKpuHwS6S8cTj5mpsAvNsCr13\
+0iPF3pfu8TGt/QGQpaFsYlufEdwA5wpJgJfDclukwRfCr5xrXJhh1W/edPGfeRHZ\
+PWQLWrZh7sdQXBTwAj76KbQft8wGO3UnYN/P5uPlyUjQgDvW6cwXRBkCgYEAxfOr\
+fb5xa9LInXKfNr7mx+wzJOfu/fP7lb/ga0h3ojG122AhwZlJwSZVdNnObRGVuNT8\
+FrKHI6133bptzo8n1NF8rtKBho4H0nl0DL1kEbkryhl7NzMd9BdkYyd7DUY2Ogn6\
+3UArw5T8zMOm6npiKU35/LAikp89S+UbgdA8G7UCgYEAkTaHmsOpS3VLGSJzwg/J\
+Eh0gdIUpEYK0ep8xvSmFQ6VJM/IjL51DS2TUdUEAMGa/YNt6ERZLA4zgNjzNWu18\
+Vye1dtYg9EGNUvurTawjMKkdYYxVMewHIi1Cqp8y2Y7fkNG5oC3XBDTEgXCRPhNw\
+u4MABySbk8AJGcbOL1LVbgkCgYEApfu5O5n57why0ZrwJ+6RAuhqxjJ4spbnyVx3\
+6F1+exElxUppY7WOI5hqJa4QqmIJYk+tBbczG9Zz4QdW1dIx+wChhNHcbCAiLPlM\
+NvaDt1zGfBM7v0BsiGUo9v9+7dWG2MnPgcAyMjB2fZg9GPX/41SQHrLuenVt53q3\
+wvUBwdUCgYB4a1E9JOuHtoBuKD1cfyiArs2ySxMfOxWQaSqPidpusJYXfq1z2Sii\
+mv3ibHXsf3nsII6grdt5e3CaieuJKMPTSJZVu2NXyWQhgclViCJyYmKcAT8+sQ0e\
+kLcNcwOuCloTtJ8dGaL/f/Xdh9X1nLeXfsJ6w2qGuceJmCF9Cj8ISg==\
+-----END RSA PRIVATE KEY-----' > /home/jenkins/.ssh/id_rsa_sabit
+RUN echo -e 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCecx594Y/TcJnYVR//ushB2IX4XQ6620ZELi32e4WChiQXXHpC6Ih6FmDjYU43kW7jfqrwhcviNcWnP2Uz7FuV9/w1Y2zunVgmFISpUofH8GmvtYMfgehyXWEKRt8eTwHUoTdoEF9fw45nYlhPgnHmxDoGA5uP59YjnACejWKX4DXC0Kpf9v1S22XRaWr/S0JnhcfPH6GjuA1d1vsHv98UrkEHjpZOZ50jBRDxELKZ8UvL5i0vkOBNly1nVHi5khyT97P4DbBOv86kWtw0U9ueQlZxfbIeMGPm8Mf6Gy8iOLlBREhQp9W1Ljk7MagoJqMALO/BE+Y8o9fdTDUGfcit jenkins@buildkitsandbox' > /home/jenkins/.ssh/id_rsa_sabit.pub
+# jenkins Kullanıcısının SSH ile bu konteynere bağlantı kurmak istediğinde 
+# - ya kullanıcı adı ve şifresi   
+# - ya da sertifikayla 
+# doğrulama yapacağı için /home/jenkins/.ssh/authorized_keys dosyasına açık anahtarı ekliyoruz (append)
+RUN cat /home/jenkins/.ssh/id_rsa_sabit.pub > /home/jenkins/.ssh/authorized_keys
+
+RUN chmod 600 /home/jenkins/.ssh/id_rsa_sabit
+RUN chmod 644 /home/jenkins/.ssh/id_rsa_sabit.pub
+
+# Bitbucket için jenkins kullanıcısının SSH ile kod havuzlarına bağlanmak için kullanacağı açık & gizli anahtarı oluşturuyoruz.
+RUN ssh-keygen -q -t rsa -N '' -f /home/jenkins/.ssh/id_rsa_bb
 RUN chmod 600 /home/jenkins/.ssh/id_rsa_bb
-RUN cat << EOF > /root/.ssh/config \
+RUN chmod 644 /home/jenkins/.ssh/id_rsa_bb.pub
+RUN echo -e '\
 Host bitbucket.ulakhaberlesme.com.tr\
     HostName 192.168.10.14\
     Port 7999\
     IdentityFile ~/.ssh/id_rsa_bb\
-    StrictHostKeyChecking no\
-EOF
+    StrictHostKeyChecking no' > /home/jenkins/.ssh/config 
+RUN chmod 644 /home/jenkins/.ssh/config
 
 
 

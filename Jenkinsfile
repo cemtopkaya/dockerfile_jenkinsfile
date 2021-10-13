@@ -10,7 +10,7 @@ pipeline {
            filename 'Dockerfile'
            dir '.'
            label "master"
-           args '--privileged --user=root --add-host bitbucket.ulakhaberlesme.com.tr:192.168.10.14 -v /var/run/docker.sock:/var/run/docker.sock '
+           args '--privileged --user root --add-host bitbucket.ulakhaberlesme.com.tr:192.168.10.14 -v /var/run/docker.sock:/var/run/docker.sock '
            // label 'docker-cinardev'
         //    customWorkspace "${env.JOB_NAME}"
        }
