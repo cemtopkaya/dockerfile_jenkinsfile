@@ -103,30 +103,23 @@ RUN sed -i 's|session    required     pam_loginuid.so|session    optional     pa
 
 USER root
 
-#---------- SSL SERTİFİKALARI -----------------#
-#                                              #
-# bitbucket.ulakhaberlesme.com.tr adresine     #
-# https ile giriş yapabilmek için sertifikaları#
-# konteyner içine çekiyoruz.                   #
-#                                              #
-# git Bağlantılarında kullanılacak sertifika   #
-# bitbucket sunucusuyla aynı olmasının ayarını #
-# yapıyoruz.                                   #
-#                                              #
-#----------------------------------------------#
+#---------- SSL SERTİFİKALARI ----------------------------------------------------------------------------------------#
+#                                                                                                                     #
+# bitbucket.ulakhaberlesme.com.tr adresine https ile giriş yapabilmek için sertifikaları konteyner içine çekiyoruz.   #
+# git Bağlantılarında kullanılacak sertifika bitbucket sunucusuyla aynı olmasının ayarını yapıyoruz.                  #
+#                                                                                                                     #
+#---------------------------------------------------------------------------------------------------------------------#
 ADD http://192.168.13.47/ssl_certificate/ca-certificate.crt /etc/ssl/certs/
 RUN update-ca-certificates
 RUN git config --global http.sslCAinfo /etc/ssl/certs/ca-certificates.crt
 
 
-#---------- SSH GENEL AYARLARI ----------------#
-#                                              #
-# SSH İle bu konteynere root kullanıcısının    #
-# username & password ile giriş yapabilmesi    #
-# için ssh ayarlarında sshd_config ayarını     #
-# değiştiriyoruz                               #
-#                                              #
-#----------------------------------------------#
+#---------- SSH GENEL AYARLARI ---------------------------------------------------------------------------------------#
+#                                                                                                                     #
+# SSH İle bu konteynere root kullanıcısının username & password ile giriş yapabilmesi için ssh ayarlarında            #
+# sshd_config ayarını değiştiriyoruz                                                                                  #
+#                                                                                                                     #
+#---------------------------------------------------------------------------------------------------------------------#
 RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
 
