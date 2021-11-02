@@ -363,12 +363,20 @@ RUN cat /home/jenkins/.ssh/id_rsa_sabit.pub > /home/jenkins/.ssh/authorized_keys
 RUN chmod 600 /home/jenkins/.ssh/id_rsa_sabit
 RUN chmod 644 /home/jenkins/.ssh/id_rsa_sabit.pub
 
-# Bitbucket için jenkins kullanıcısının SSH ile kod havuzlarına bağlanmak için kullanacağı açık & gizli anahtarı oluşturuyoruz.
+# Bu konteynerden Bitbucket kod havuzlarına SSH ile bağlantı kurulmak istendiğinde arka planda ~/.ssh/config dosyası okunacaktır.
+# "~/.ssh/config" Dosyasında hedef sunucuya (bitbucket.ulakhaberlesme.com.tr) bağlantı sağlamak için:
+# User jenkins                   > ile aktif kullanıcı ne olursa olsun jenkins kullanıcı adı kullanılacağı,
+# HostName 192.168.10.14         > ile alan adının hangi IP adresini çözümleyeceğine bakılmaksızın 192.168.10.14 adresine gideceği,
+# Port 7999                      > ile SSH'ın 22 değilde 7999 portuna yapılacağı,
+# IdentityFile ~/.ssh/id_rsa_bb  > ile şifre olarak ~/.ssh/id_rsa_bb ikili sertifika anahtarının kullanılacağı, 
+# StrictHostKeyChecking no       > ile bağlanılacak IP'nin bu konteyner içinden "uzak bağlantı yapılabilecek makina listesinde var mı" kontorlü yapılmayacağı
+# belirtilmiş olur. Bitbucket sunucusu bağlantıda kullanılan jenkins kullanıcısının yetkilendirildiği kod havuzlarına erişim yetkisi verir.
 RUN ssh-keygen -q -t rsa -N '' -f /home/jenkins/.ssh/id_rsa_bb
 RUN chmod 600 /home/jenkins/.ssh/id_rsa_bb
 RUN chmod 644 /home/jenkins/.ssh/id_rsa_bb.pub
 RUN echo -e '\
 Host bitbucket.ulakhaberlesme.com.tr\
+    User jenkins\
     HostName 192.168.10.14\
     Port 7999\
     IdentityFile ~/.ssh/id_rsa_bb\
