@@ -365,7 +365,7 @@ RUN chmod 644 /home/jenkins/.ssh/id_rsa_sabit.pub
 
 # Bu konteynerden Bitbucket kod havuzlarına SSH ile bağlantı kurulmak istendiğinde arka planda ~/.ssh/config dosyası okunacaktır.
 # "~/.ssh/config" Dosyasında hedef sunucuya (bitbucket.ulakhaberlesme.com.tr) bağlantı sağlamak için:
-# User jenkins                   > ile aktif kullanıcı ne olursa olsun jenkins kullanıcı adı kullanılacağı,
+# User jenkins                   > ile eğer komut satırında bir kullanıcı adı belirtilmemişse (Örn. $ ssh bitbucket.hede.com) ve ~/.ssh/config içinde özel bir ayar bulunursa buradaki kullanıcı adı (Örneğimizde User anahtarına atanan jenkins) kullanılır. Eğer ~/.ssh/config dosyasında da bir ayar yoksa "whoami" tarafından döndürülen oturum açma bilgileriniz kullanılır,
 # HostName 192.168.10.14         > ile alan adının hangi IP adresini çözümleyeceğine bakılmaksızın 192.168.10.14 adresine gideceği,
 # Port 7999                      > ile SSH'ın 22 değilde 7999 portuna yapılacağı,
 # IdentityFile ~/.ssh/id_rsa_bb  > ile şifre olarak ~/.ssh/id_rsa_bb ikili sertifika anahtarının kullanılacağı, 
