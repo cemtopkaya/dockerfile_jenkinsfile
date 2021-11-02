@@ -89,6 +89,7 @@ ARG AGENT_WORKDIR=/home/${user}/agent
 # Make sure the package repository 6is up to date.
 RUN apt-get -qy full-upgrade && \
 # Install a basic SSH server
+# sshpass kullanım örneği: $ sshpass -p !4u2tryhack ssh -o StrictHostKeyChecking=no username@host.example.com
     apt-get install -qy \
                sudo \
                sshpass \
@@ -354,7 +355,7 @@ kLcNcwOuCloTtJ8dGaL/f/Xdh9X1nLeXfsJ6w2qGuceJmCF9Cj8ISg==\
 -----END RSA PRIVATE KEY-----' > /home/jenkins/.ssh/id_rsa_sabit
 RUN echo -e 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCecx594Y/TcJnYVR//ushB2IX4XQ6620ZELi32e4WChiQXXHpC6Ih6FmDjYU43kW7jfqrwhcviNcWnP2Uz7FuV9/w1Y2zunVgmFISpUofH8GmvtYMfgehyXWEKRt8eTwHUoTdoEF9fw45nYlhPgnHmxDoGA5uP59YjnACejWKX4DXC0Kpf9v1S22XRaWr/S0JnhcfPH6GjuA1d1vsHv98UrkEHjpZOZ50jBRDxELKZ8UvL5i0vkOBNly1nVHi5khyT97P4DbBOv86kWtw0U9ueQlZxfbIeMGPm8Mf6Gy8iOLlBREhQp9W1Ljk7MagoJqMALO/BE+Y8o9fdTDUGfcit jenkins@buildkitsandbox' > /home/jenkins/.ssh/id_rsa_sabit.pub
 # jenkins Kullanıcısının SSH ile bu konteynere bağlantı kurmak istediğinde 
-# - ya kullanıcı adı ve şifresi   
+# - ya kullanıcı adı ve şifresi ($ sshpass -p !4u2tryhack ssh -o StrictHostKeyChecking=no username@host.example.com)
 # - ya da sertifikayla 
 # doğrulama yapacağı için /home/jenkins/.ssh/authorized_keys dosyasına açık anahtarı ekliyoruz (append)
 RUN cat /home/jenkins/.ssh/id_rsa_sabit.pub > /home/jenkins/.ssh/authorized_keys
